@@ -61,7 +61,6 @@
 			children = (
 				7DCA76642F0F0D3C00898481 /* BNK */,
 				7DCA76632F0F0D3C00898481 /* Products */,
-				E5CA82F74BE006277F27ED88 /* Pods */,
 				7C638E5C61E06A3EECCA9CE4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -72,13 +71,6 @@
 				7DCA76622F0F0D3C00898481 /* BNK.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E5CA82F74BE006277F27ED88 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
