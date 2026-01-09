@@ -32,7 +32,7 @@ class PasscodeCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     private func setupButtons() {
-        let config = UIImage.SymbolConfiguration(
+        _ = UIImage.SymbolConfiguration(
             pointSize: 30,
             weight: .regular
         )
