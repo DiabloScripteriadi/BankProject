@@ -1,12 +1,14 @@
 //
-//  PasscodeView.swift
+//  PasscodeVC 2.swift
 //  BNK
 //
-//  Created by chasemedkcorto on 09.01.26.
+//  Created by chasemedkcorto on 11.01.26.
 //
+
+
 import UIKit
 
-class PasscodeVC: UIViewController {
+class PasscodeRepeatVC: UIViewController {
 
     private let stepLabel = UILabel()
     private let divider = UIView()
@@ -67,7 +69,7 @@ class PasscodeVC: UIViewController {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        titleLabel.text = "Create Your Passcode"
+        titleLabel.text = "Repeate Your Passcode"
         titleLabel.font = .systemFont(ofSize: 25, weight: .semibold)
         titleLabel.numberOfLines = 0
 
