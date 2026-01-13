@@ -275,4 +275,4 @@ class MoreVc: UIViewController {
         getStartedButton.backgroundColor = enabled ? .black : .systemGray4
     }
 }
-#warning("loading screen gaqvs gasaketebili romelic loadings moaxdens da gadava onboard screenze ")
+#warning("loading screen gaqvs gasaketebili romelic loadings moaxdens da gadava onboard screenze figmaze gadaamowme fetchavs datas")
