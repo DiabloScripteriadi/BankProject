@@ -16,7 +16,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7DCA76742F0F0D3D00898481 /* Exceptions for "BNK" folder in "BNK" target */ = {
+		7D5731B22F144E6200E75E79 /* Exceptions for "BNK" folder in "BNK" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -26,10 +26,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7DCA76642F0F0D3C00898481 /* BNK */ = {
+		7D5731A62F144E6200E75E79 /* BNK */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				7DCA76742F0F0D3D00898481 /* Exceptions for "BNK" folder in "BNK" target */,
+				7D5731B22F144E6200E75E79 /* Exceptions for "BNK" folder in "BNK" target */,
 			);
 			path = BNK;
 			sourceTree = "<group>";
@@ -59,9 +59,9 @@
 		7DCA76592F0F0D3B00898481 = {
 			isa = PBXGroup;
 			children = (
-				7DCA76642F0F0D3C00898481 /* BNK */,
-				7DCA76632F0F0D3C00898481 /* Products */,
+				7D5731A62F144E6200E75E79 /* BNK */,
 				7C638E5C61E06A3EECCA9CE4 /* Frameworks */,
+				7DCA76632F0F0D3C00898481 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,7 +89,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				7DCA76642F0F0D3C00898481 /* BNK */,
+				7D5731A62F144E6200E75E79 /* BNK */,
 			);
 			name = BNK;
 			productName = BNK;
