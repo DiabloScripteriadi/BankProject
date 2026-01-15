@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PasscodeVC: UIViewController {
+class GetStartedPasscodeVC: UIViewController {
 
     private let stepLabel = UILabel()
     private let divider = UIView()
