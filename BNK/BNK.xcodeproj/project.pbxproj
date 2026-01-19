@@ -35,8 +35,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7D026D1D2F19A0E80098BAFC /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
-		7D026D1E2F19A1060098BAFC /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		7D61EE612F0FBA9A00CF972A /* CountryPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CountryPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7DCA76622F0F0D3C00898481 /* BNK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BNK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -45,6 +43,7 @@
 		7D5731B22F144E6200E75E79 /* Exceptions for "BNK" folder in "BNK" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Firebase/swift-login-system/AlertManager.swift",
 				Info.plist,
 			);
 			target = 7DCA76612F0F0D3C00898481 /* BNK */;
@@ -52,16 +51,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7D026CFB2F199FC40098BAFC /* LoginPage */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LoginPage;
-			sourceTree = "<group>";
-		};
-		7D026D112F19A0000098BAFC /* GetStartedPage */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GetStartedPage;
-			sourceTree = "<group>";
-		};
 		7D5731A62F144E6200E75E79 /* BNK */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -116,38 +105,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7D026CF32F199FB20098BAFC /* Logins */ = {
-			isa = PBXGroup;
-			children = (
-				7D026CFB2F199FC40098BAFC /* LoginPage */,
-			);
-			path = Logins;
-			sourceTree = "<group>";
-		};
-		7D026D002F199FE90098BAFC /* RegisterAnAccount */ = {
-			isa = PBXGroup;
-			children = (
-				7D026D112F19A0000098BAFC /* GetStartedPage */,
-			);
-			path = RegisterAnAccount;
-			sourceTree = "<group>";
-		};
-		7D026D1C2F19A0D80098BAFC /* swift-login-system */ = {
-			isa = PBXGroup;
-			children = (
-				7D026D1E2F19A1060098BAFC /* AlertManager.swift */,
-				7D026D1D2F19A0E80098BAFC /* AuthService.swift */,
-			);
-			path = "swift-login-system";
-			sourceTree = "<group>";
-		};
 		7DCA76592F0F0D3B00898481 = {
 			isa = PBXGroup;
 			children = (
-				7D026D1C2F19A0D80098BAFC /* swift-login-system */,
 				7D5731A62F144E6200E75E79 /* BNK */,
-				7D026D002F199FE90098BAFC /* RegisterAnAccount */,
-				7D026CF32F199FB20098BAFC /* Logins */,
 				7C638E5C61E06A3EECCA9CE4 /* Frameworks */,
 				7DCA76632F0F0D3C00898481 /* Products */,
 			);
@@ -177,8 +138,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				7D026CFB2F199FC40098BAFC /* LoginPage */,
-				7D026D112F19A0000098BAFC /* GetStartedPage */,
 				7D5731A62F144E6200E75E79 /* BNK */,
 			);
 			name = BNK;

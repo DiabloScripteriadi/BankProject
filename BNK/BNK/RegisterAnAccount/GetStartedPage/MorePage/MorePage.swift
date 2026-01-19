@@ -226,7 +226,7 @@ class MoreVc: UIViewController {
         let birthDate = sender.date
         let calendar = Calendar.current
         let ageComponents = calendar.dateComponents([.year], from: birthDate, to: Date())
-        let age = ageComponents.year ?? 0
+        _ = ageComponents.year ?? 0
         dateTextfield.text = formatDate(date: birthDate)
     }
 
@@ -276,3 +276,5 @@ class MoreVc: UIViewController {
     }
 }
 #warning("loading screen gaqvs gasaketebili romelic loadings moaxdens da gadava onboard screenze figmaze gadaamowme fetchavs datas")
+#warning("Forgot Pasword Page gasaketebeli")
+#warning("Design Dasaxvewi divider asatani yvelag page ze da gadasanawilebeli")

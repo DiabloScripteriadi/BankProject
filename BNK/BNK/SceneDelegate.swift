@@ -21,6 +21,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let nav = UINavigationController(rootViewController: loginVC1())
         window?.rootViewController = nav
         window?.makeKeyAndVisible()
+        
+        let userRequest = RegisterUserRequest (
+            username: "dk", email: "dk@gmail.com", pasword: "123456"
+            
+        )
+        AuthService.shared.registerUser(with: userRequest) {wasRegisterd, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            } else {
+                    print("რეგისტრაცია გასულია", wasRegisterd)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
