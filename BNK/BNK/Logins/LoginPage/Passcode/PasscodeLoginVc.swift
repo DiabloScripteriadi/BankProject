@@ -229,7 +229,7 @@ class LoginPasscodeVC: UIViewController {
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 15
         getStartedButton.isEnabled = false
-
+        getStartedButton.addTarget(self, action: #selector(DidTapLogout), for: .touchUpInside)
         view.addSubview(getStartedButton)
 
         NSLayoutConstraint.activate([
@@ -238,7 +238,21 @@ class LoginPasscodeVC: UIViewController {
             getStartedButton.widthAnchor.constraint(equalToConstant: 300),
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
+        
     }
-}
+    @objc func DidTapLogout() {
+        AuthService.shared.signOut { [weak self] error in
+          guard let self = self else { return }
+            if let error = error {
+                AlertManager.showLogoutError(on: self, message: "Error", error: error)
+                return
+            }
+            if let sceneDelegate = self.view.window?.windowScene?.delegate  as? SceneDelegate {
+                sceneDelegate.CheckAuthentication()
+            }
+        }
+       }
+   }
+
 #warning("pascode shi gadasatani delete gilaki 0 ianis adginlas da gasadidbeli")
 

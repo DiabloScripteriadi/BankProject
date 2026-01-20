@@ -172,7 +172,7 @@ class GetStartedVc: UIViewController {
         getStartedButton.layer.cornerRadius = 15
         getStartedButton.isEnabled = false
         view.addSubview(getStartedButton)
-
+        getStartedButton.addTarget(self, action: #selector(didTapSignUp), for: .touchUpInside)
         NSLayoutConstraint.activate([
             getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
@@ -180,8 +180,42 @@ class GetStartedVc: UIViewController {
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
-
-
+    @objc private func didTapSignUp() {
+        let registerUserRequest = RegisterUserRequest(username: "", email: self.emailTextField.text ?? "", password: self.passwordTextField.text ?? "")
+        //username check umnishvneloa da gamoviyenebt sxva viewcontrolershi magram aq vqondes mainc
+//        if !Validator.isValidUsername(for: registerUserRequest,username) {
+//            AlertManager.showInvalidUsernameAlert(on: self)
+//        }
+        //email check
+        if !Validator.isValidEmail(registerUserRequest.email) {
+            AlertManager.showInvalidEmailAlert(on: self)
+        }
+        //password check
+        if !Validator.isValidPassword(registerUserRequest.password) {
+            AlertManager.showInvalidPasswordAlert(on: self)
+        }
+        
+        AuthService.shared.registerUser(with: registerUserRequest) { [weak self]
+            wasRegisterd, error in
+            guard let self = self else{return}
+            if let error = error {
+                AlertManager.showRegistrationErrorAlert(on: self, message: "g", error: error)
+                return
+            }
+            if wasRegisterd {
+                if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.CheckAuthentication()
+                }else {
+                    AlertManager.showRegistrationErrorAlert(on: self, message: "error")
+                }
+            }
+        }
+        
+        
+    }
+    
+    
+ 
     @objc private func emailChanged() {
         animate(label: emailFloatingLabel, hasText: !(emailTextField.text?.isEmpty ?? true))
         updateButtonState()

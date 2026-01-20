@@ -16,7 +16,7 @@ class AuthService {
     public func registerUser(with userRequest: RegisterUserRequest,completion: @escaping (Bool, Error?) -> Void) {
         let username = userRequest.username
         let email = userRequest.email
-        let password = userRequest.pasword
+        let password = userRequest.password
         
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             
@@ -41,6 +41,23 @@ class AuthService {
                 }
             
             completion(true, nil)
+        }
+    }
+    public func signIn(with userRequest: LoginUSerRequest, completion: @escaping(Error?)-> Void){
+        Auth.auth().signIn(withEmail: userRequest.email, password: userRequest.password) { (_, error) in
+            if let error = error {
+                completion(error)
+            }
+            completion(nil)
+        }
+    }
+    public func signOut(completion: @escaping(Error?)-> Void){
+        do {
+            try Auth.auth().signOut()
+            completion(nil)
+        } catch let signOutError as NSError {
+            print("Error signing out: \(signOutError)")
+            completion(signOutError)
         }
     }
 }

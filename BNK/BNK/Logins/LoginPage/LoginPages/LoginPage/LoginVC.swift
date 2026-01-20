@@ -7,7 +7,7 @@
 import UIKit
 import FirebaseAuth
 
-class loginVC1: UIViewController {
+class loginVC: UIViewController {
     
     
     private let stepLabel = UILabel()
@@ -41,6 +41,10 @@ class loginVC1: UIViewController {
         setupGetStartedButton()
         setupForgotPasswordButton()
         setupRemember()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
         
     }
     //    private func checkBox() {
@@ -209,15 +213,11 @@ class loginVC1: UIViewController {
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 15
         getStartedButton.isEnabled = false
-
-        getStartedButton.addTarget(
-            self,
-            action: #selector(didTapLogin),
-            for: .touchUpInside
-        )
-
+        getStartedButton.addTarget(self, action: #selector(didTapSignIn), for: .touchUpInside)
+        
+        
         view.addSubview(getStartedButton)
-
+        
         NSLayoutConstraint.activate([
             getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
@@ -225,9 +225,43 @@ class loginVC1: UIViewController {
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
-
+    //selectorebi romelitac funqcionali ketdeba
     
+    @objc private func didTapSignIn() {
+        let loginRequest = LoginUSerRequest(email: emailTextField.text!, password: passwordTextField.text!)
+        //email check
+        if !Validator.isValidEmail(loginRequest.email) {
+            AlertManager.showInvalidEmailAlert(on: self)
+        }
+        //password check
+        if !Validator.isValidPassword(loginRequest.password) {
+            AlertManager.showInvalidPasswordAlert(on: self)
+        }
+        
+        //sign in
+        AuthService.shared.signIn(with: loginRequest) { [weak self]
+            error in
+            guard let self = self else{return}
+            if let error = error {
+                AlertManager.showSigninError(on: self, message: error.localizedDescription)
+                return
+            }
+            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                sceneDelegate.CheckAuthentication()
+            }else {
+                AlertManager.showSigninError(on: self, message: error!.localizedDescription)
+            }
+        }
+    }
     
+    @objc private func didTapNewUser() {
+        let vc = GetStartedVc()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    @objc private func didTapForgotPassword() {
+        let vc = ForgotPaswordVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
     @objc private func emailChanged() {
         animate(label: emailFloatingLabel, hasText: !(emailTextField.text?.isEmpty ?? true))
         updateButtonState()
@@ -260,20 +294,6 @@ class loginVC1: UIViewController {
         UIView.animate(withDuration: 0.25) {
             self.getStartedButton.isEnabled = enabled
             self.getStartedButton.backgroundColor = enabled ? .black : .systemGray4
-        }
-    }
-    @objc func didTapLogin() {
-        let email = emailTextField.text ?? ""
-        let password = passwordTextField.text ?? ""
-        
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                print("❌ Login error:", error.localizedDescription)
-                return
-            }
-            
-            print("✅ Login success:", result?.user.uid ?? "")
-            
         }
     }
 }

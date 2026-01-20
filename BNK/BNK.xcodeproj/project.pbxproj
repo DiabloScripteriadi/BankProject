@@ -43,7 +43,6 @@
 		7D5731B22F144E6200E75E79 /* Exceptions for "BNK" folder in "BNK" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Firebase/swift-login-system/AlertManager.swift",
 				Info.plist,
 			);
 			target = 7DCA76612F0F0D3C00898481 /* BNK */;

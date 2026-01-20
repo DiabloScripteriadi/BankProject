@@ -6,35 +6,75 @@
 //
 
 import UIKit
-
+import FirebaseAuth
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    
     var window: UIWindow?
-
-
+    
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard (scene is UIWindowScene) else { return }
-        window = UIWindow(windowScene: scene as! UIWindowScene)
-        let nav = UINavigationController(rootViewController: loginVC1())
-        window?.rootViewController = nav
-        window?.makeKeyAndVisible()
-        
-        let userRequest = RegisterUserRequest (
-            username: "dk", email: "dk@gmail.com", pasword: "123456"
-            
-        )
-        AuthService.shared.registerUser(with: userRequest) {wasRegisterd, error in
-            if let error = error {
-                print(error.localizedDescription)
-                return
-            } else {
-                    print("რეგისტრაცია გასულია", wasRegisterd)
-            }
-        }
+        self.setupWindow(with: scene)
+        self.CheckAuthentication()
+        //        guard (scene is UIWindowScene) else { return }
+        //        window = UIWindow(windowScene: scene as! UIWindowScene)
+        //        let nav = UINavigationController(rootViewController: loginVC1())
+        //        window?.rootViewController = nav
+        //        window?.makeKeyAndVisible()
+        //
+        //        let userRequest = RegisterUserRequest (
+        //            username: "mamasheni", email: "123456@gmail.com", pasword: "123456"
+        //
+        //        )
+        //        AuthService.shared.registerUser(with: userRequest) {wasRegisterd, error in
+        //            if let error = error {
+        //                print(error.localizedDescription)
+        //                return
+        //            } else {
+        //                    print("რეგისტრაცია გასულია", wasRegisterd)
+        //            }
+        //}
     }
+    private func setupWindow(with scene: UIScene) {
+        guard let windowScene = (scene as? UIWindowScene) else {return}
+        let window = UIWindow(windowScene: windowScene)
+        self.window = window
+        self.window?.makeKeyAndVisible()
+    }
+    public func CheckAuthentication() {
+        //sign in screenze gadasvla
+        if Auth.auth().currentUser == nil {
+            let vc = GetStartedVc()
+            let nav = UINavigationController(rootViewController: vc)
+            self.window?.rootViewController = nav
+        }else {
+            //home Screenze gadasvla
+            let vc = loginVC()
+            let nav = UINavigationController(rootViewController: vc)
+            self.window?.rootViewController = nav
+        }
+        
+    }
+    private func goToController(with viewController: UIViewController) {
+        guard let window = self.window else { return }
+
+        // ანიმაცია
+        UIView.animate(withDuration: 0.25, animations: {
+            window.layer.opacity = 0
+        }, completion: { _ in
+            // ახალი rootViewController
+            let nav = UINavigationController(rootViewController: viewController)
+            window.rootViewController = nav
+
+            // ანიმაცია უკან დაბრუნებისთვის
+            UIView.animate(withDuration: 0.25) {
+                window.layer.opacity = 1
+            }
+        })
+    }
+
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
