@@ -228,31 +228,37 @@ class loginVC: UIViewController {
     //selectorebi romelitac funqcionali ketdeba
     
     @objc private func didTapSignIn() {
-        let loginRequest = LoginUSerRequest(email: emailTextField.text!, password: passwordTextField.text!)
-        //email check
-        if !Validator.isValidEmail(loginRequest.email) {
+
+        let email = emailTextField.text ?? ""
+        let password = passwordTextField.text ?? ""
+
+        guard Validator.isValidEmail(email) else {
             AlertManager.showInvalidEmailAlert(on: self)
+            return
         }
-        //password check
-        if !Validator.isValidPassword(loginRequest.password) {
+
+        guard Validator.isValidPassword(password) else {
             AlertManager.showInvalidPasswordAlert(on: self)
+            return
         }
-        
-        //sign in
-        AuthService.shared.signIn(with: loginRequest) { [weak self]
-            error in
-            guard let self = self else{return}
+
+        let request = LoginUSerRequest(email: email, password: password)
+
+        AuthService.shared.signIn(with: request) { [weak self] error in
+            guard let self = self else { return }
+
             if let error = error {
-                AlertManager.showSigninError(on: self, message: error.localizedDescription)
+                AlertManager.showSignInErrorAlert(on: self, with: error)
                 return
             }
+
+            // ✅ წარმატებით დალოგინდა
             if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                sceneDelegate.CheckAuthentication()
-            }else {
-                AlertManager.showSigninError(on: self, message: error!.localizedDescription)
+                sceneDelegate.goToMain()
             }
         }
     }
+
     
     @objc private func didTapNewUser() {
         let vc = GetStartedVc()

@@ -9,55 +9,98 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class AuthService {
-    
+
     static let shared = AuthService()
     private init() {}
-    //რეგისტრაცია უზერის უზერრექუესტ უზერის ინფორმაცია  ბოოლიანი გამოიყენება მაშნ როცა  უზერი დარეგისტრირებულია და დასეივებულია დათაბეისში სწორადდ
-    public func registerUser(with userRequest: RegisterUserRequest,completion: @escaping (Bool, Error?) -> Void) {
-        let username = userRequest.username
-        let email = userRequest.email
-        let password = userRequest.password
-        
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            
+    private var verificationId: String?
+    private let auth = Auth.auth()
+
+    //  - Email Register
+    func registerUser(with userRequest: RegisterUserRequest, completion: @escaping (Bool, Error?) -> Void) {
+        auth.createUser(withEmail: userRequest.email, password: userRequest.password) { result, error in
             if let error = error {
                 completion(false, error)
                 return
             }
-            guard let resultUser = result?.user else {
-                completion(false,nil)
+            guard let user = result?.user else {
+                completion(false, nil)
                 return
             }
-            let db = Firestore.firestore()
-            db.collection("users")
-                .document(resultUser.uid)
-                .setData(["username" : username,
-                          "email" : email]) { error in
-                    if let error = error {
-                        print("Error adding document: \(error)")
-                    } else {
-                        print("Document added with ID: \(resultUser.uid)")
-                    }
+
+            Firestore.firestore().collection("users")
+                .document(user.uid)
+                .setData([
+                    "username": userRequest.username,
+                    "email": userRequest.email
+                ]) { error in
+                    completion(error == nil, error)
                 }
-            
-            completion(true, nil)
         }
     }
-    public func signIn(with userRequest: LoginUSerRequest, completion: @escaping(Error?)-> Void){
-        Auth.auth().signIn(withEmail: userRequest.email, password: userRequest.password) { (_, error) in
+
+    //Phone Auth: Start verification
+    func startAuth(phoneNumber: String, completion: @escaping (Bool) -> Void) {
+        // Disable App Check / reCAPTCHA for simulator testing
+        Auth.auth().settings?.isAppVerificationDisabledForTesting = true
+
+        PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { [weak self] verificationID, error in
             if let error = error {
-                completion(error)
+                print("❌ startAuth error:", error.localizedDescription)
+                completion(false)
+                return
             }
-            completion(nil)
+
+            guard let verificationID = verificationID else {
+                print("❌ No verificationID returned")
+                completion(false)
+                return
+            }
+
+            self?.verificationId = verificationID
+            print("✅ verificationID received:", verificationID)
+            completion(true)
         }
     }
-    public func signOut(completion: @escaping(Error?)-> Void){
+
+    //Phone Auth: Verify code
+    func verifyCode(smsCode: String, completion: @escaping (Bool) -> Void) {
+        guard let verificationId = verificationId else {
+            print("❌ verificationID is nil, call startAuth first")
+            completion(false)
+            return
+        }
+
+        let credential = PhoneAuthProvider.provider().credential(
+            withVerificationID: verificationId,
+            verificationCode: smsCode
+        )
+
+        Auth.auth().signIn(with: credential) { authResult, error in
+            if let error = error {
+                print("❌ verifyCode error:", error.localizedDescription)
+                completion(false)
+                return
+            }
+
+            print("✅ User signed in:", authResult?.user.uid ?? "")
+            completion(true)
+        }
+    }
+
+    // Email Sign In
+    func signIn(with userRequest: LoginUSerRequest, completion: @escaping (Error?) -> Void) {
+        auth.signIn(withEmail: userRequest.email, password: userRequest.password) { _, error in
+            completion(error)
+        }
+    }
+
+    // Sign Out
+    func signOut(completion: @escaping (Error?) -> Void) {
         do {
-            try Auth.auth().signOut()
+            try auth.signOut()
             completion(nil)
-        } catch let signOutError as NSError {
-            print("Error signing out: \(signOutError)")
-            completion(signOutError)
+        } catch {
+            completion(error)
         }
     }
 }

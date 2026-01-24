@@ -7,76 +7,89 @@
 import UIKit
 
 class AlertManager {
-
-private static func showBasicAlert(on vc: UIViewController,title: String,message: String) {
-      DispatchQueue.main.async {
-            let alert = UIAlertController(title: title,message: message,preferredStyle: .alert)
-
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
+    
+    private static func showBasicAlert(on vc: UIViewController, title: String, message: String?) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
             vc.present(alert, animated: true)
         }
     }
 }
 
-//validacia alertebis
-extension AlertManager {
-
-    public static func showInvalidEmailAlert(on vc: UIViewController) {
-        showBasicAlert(on: vc,title: "Invalid Email",message: "Please enter a valid email")
-    }
-
-    public static func showInvalidPasswordAlert(on vc: UIViewController) {
-        showBasicAlert(on: vc,title: "Invalid Password",message: "Please enter a valid password"
-        )
-    }
-
-    public static func showInvalidUsernameAlert(on vc: UIViewController) {
-        showBasicAlert(
-            on: vc,title: "Invalid Username",message: "Please enter a valid username")
-    }
-}
-
-//registraciis erorebi
-extension AlertManager {
-
-    public static func showRegistrationErrorAlert(on vc: UIViewController,message: String) {
-        showBasicAlert(on: vc,title: "Registration Error",message: message)
-}
-    public static func showRegistrationErrorAlert(on vc: UIViewController,message: String, error: Error) {
-        showBasicAlert(on: vc, title: "unknow Registration Errror", message:"\(error.localizedDescription)")
-}
-}
-//login error
+// MARK: - Show Validation Alerts
 extension AlertManager {
     
-    public static func showSigninError(on vc: UIViewController,message: String) {
-        showBasicAlert(on: vc,title: "Registration Error Signing in",message: message)
+    public static func showInvalidEmailAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Invalid Email", message: "Please enter a valid email.")
     }
-    public static func showSignInErrorAlert(on vc: UIViewController,message: String, error: Error) {
-        showBasicAlert(on: vc, title: "unknow Registration Errror", message:"\(error.localizedDescription)")
+    
+    public static func showInvalidPasswordAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Invalid Password", message: "Please enter a valid password.")
     }
-}
-//log out error
-extension AlertManager {
-    public static func showLogoutError(on vc: UIViewController,message: String, error: Error) {
-        showBasicAlert(on: vc, title: "Logout Error", message:"\(error.localizedDescription)")
-    }
-}
-//forhgot password
-extension AlertManager {
-    public static func showPaswordResetSent(on vc: UIViewController,message: String) {
-        showBasicAlert(on: vc,title: "Registration Error Signing in",message: message)
-    }
-    public static func showErrorSendingPaswordReset(on vc: UIViewController,message: String, error: Error) {
-        showBasicAlert(on: vc, title: "Error Sending Pasword Reset", message:"\(error.localizedDescription)")
+    
+    public static func showInvalidUsernameAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Invalid Username", message: "Please enter a valid username.")
     }
 }
-//fetchings errorrebi
+
+
+// MARK: - Registration Errors
 extension AlertManager {
-    public static func fetchingUserEror(on vc: UIViewController,message: String) {
-        showBasicAlert(on: vc,title: " Error Fetchin User",message: message)
+    
+    public static func showRegistrationErrorAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Unknown Registration Error", message: nil)
     }
-    public static func showUnknowFetchingUser(on vc: UIViewController,message: String, error: Error) {
-        showBasicAlert(on: vc, title: "Unknown Eror Fetching User", message:"\(error.localizedDescription)")
+    
+    public static func showRegistrationErrorAlert(on vc: UIViewController, with error: Error) {
+        self.showBasicAlert(on: vc, title: "Unknown Registration Error", message: "\(error.localizedDescription)")
+    }
+}
+
+
+// MARK: - Log In Errors
+extension AlertManager {
+    
+    public static func showSignInErrorAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Unknown Error Signing In", message: nil)
+    }
+    
+    public static func showSignInErrorAlert(on vc: UIViewController, with error: Error) {
+        self.showBasicAlert(on: vc, title: "Error Signing In", message: "\(error.localizedDescription)")
+    }
+}
+
+
+// MARK: - Logout Errors
+extension AlertManager {
+    
+    public static func showLogoutError(on vc: UIViewController, with error: Error) {
+        self.showBasicAlert(on: vc, title: "Log Out Error", message: "\(error.localizedDescription)")
+    }
+}
+
+
+// MARK: - Forgot Password
+extension AlertManager {
+
+    public static func showPasswordResetSent(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Password Reset Sent", message: nil)
+    }
+    
+    public static func showErrorSendingPasswordReset(on vc: UIViewController, with error: Error) {
+        self.showBasicAlert(on: vc, title: "Error Sending Password Reset", message: "\(error.localizedDescription)")
+    }
+}
+
+
+// MARK: - Fetching User Errors
+extension AlertManager {
+    
+    public static func showFetchingUserError(on vc: UIViewController, with error: Error) {
+        self.showBasicAlert(on: vc, title: "Error Fetching User", message: "\(error.localizedDescription)")
+    }
+    
+    public static func showUnknownFetchingUserError(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Unknown Error Fetching User", message: nil)
     }
 }

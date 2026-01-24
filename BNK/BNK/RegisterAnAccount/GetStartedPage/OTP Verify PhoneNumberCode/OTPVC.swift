@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import FirebaseAuth
  class OTPVC: UIViewController {
     
     private let stepLabel = UILabel()
@@ -126,7 +126,7 @@ import UIKit
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 15
         getStartedButton.isEnabled = false
-        
+        getStartedButton.addTarget(self, action: #selector(verifyTapped), for: .touchUpInside)
         view.addSubview(getStartedButton)
         
         NSLayoutConstraint.activate([
@@ -137,7 +137,26 @@ import UIKit
         ])
     }
     
-    
+
+     @objc private func verifyTapped() {
+         let code = otpFields.compactMap { $0.text ?? "" }.joined()
+         guard code.count == 6 else { return }
+
+         AuthService.shared.verifyCode(smsCode: code) { success in
+             DispatchQueue.main.async {
+                 if success {
+                     print("✅ Logged in")
+                     let vc = MoreVc()
+                     self.navigationController?.pushViewController(vc, animated: true)
+                 } else {
+                     print("❌ Wrong code or verificationID missing")
+                 }
+             }
+         }
+     }
+
+
+
     
     @objc private func textDidChange(_ textField: UITextField) {
         if let text = textField.text, text.count == 1 {
@@ -165,12 +184,9 @@ extension OTPVC: UITextFieldDelegate {
                    shouldChangeCharactersIn range: NSRange,
                    replacementString string: String) -> Bool {
         
-        if string.isEmpty {
-            textField.text = ""
+        if string.isEmpty {textField.text = ""
             let prevTag = textField.tag - 1
-            if prevTag >= 0 {
-                otpFields[prevTag].becomeFirstResponder()
-            }
+            if prevTag >= 0 {otpFields[prevTag].becomeFirstResponder()}
             updateButtonState()
             return false
         }
@@ -178,3 +194,4 @@ extension OTPVC: UITextFieldDelegate {
         return textField.text?.isEmpty ?? true
     }
 }
+

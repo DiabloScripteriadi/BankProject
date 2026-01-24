@@ -195,23 +195,21 @@ class GetStartedVc: UIViewController {
             AlertManager.showInvalidPasswordAlert(on: self)
         }
         
-        AuthService.shared.registerUser(with: registerUserRequest) { [weak self]
-            wasRegisterd, error in
-            guard let self = self else{return}
+        AuthService.shared.registerUser(with: registerUserRequest) { [weak self] success, error in
+            guard let self = self else { return }
+
             if let error = error {
-                AlertManager.showRegistrationErrorAlert(on: self, message: "g", error: error)
+                AlertManager.showRegistrationErrorAlert(on: self, with: error)
                 return
             }
-            if wasRegisterd {
+
+            if success {
                 if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                    sceneDelegate.CheckAuthentication()
-                }else {
-                    AlertManager.showRegistrationErrorAlert(on: self, message: "error")
+                    sceneDelegate.goToMain()
                 }
             }
         }
-        
-        
+
     }
     
     

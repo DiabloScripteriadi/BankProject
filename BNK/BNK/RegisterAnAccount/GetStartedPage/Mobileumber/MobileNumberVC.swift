@@ -7,7 +7,7 @@
 
 import UIKit
 import CountryPickerView
-
+import FirebaseAuth
 final class MobileNumberVC: UIViewController {
 
 
@@ -136,6 +136,7 @@ final class MobileNumberVC: UIViewController {
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 15
         getStartedButton.isEnabled = false
+        getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
         view.addSubview(getStartedButton)
 
         NSLayoutConstraint.activate([
@@ -145,10 +146,38 @@ final class MobileNumberVC: UIViewController {
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
-
+    
     private func setupCountryPicker() {
         countryPickerView.delegate = self
         
+    }
+    @objc private func getStartedTapped() {
+        guard let rawNumber = numberTextField.text, !rawNumber.isEmpty else { return }
+ 
+        let countryCode = countryCodeButton.title(for: .normal) ?? "+995"
+
+        let cleanNumber = rawNumber
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "-", with: "")
+
+        let phoneNumber = countryCode + cleanNumber
+
+        print("📱 Trying phone number:", phoneNumber)
+
+        AuthService.shared.startAuth(phoneNumber: phoneNumber) { [weak self] success in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                if success {
+                    print("✅ Verification ID generated!")
+                    let vc = OTPVC()
+                    self.navigationController!.pushViewController(vc, animated: true)
+                   
+                } else {
+                    print("❌ Failed to generate verification ID")
+                    self.getStartedButton.isEnabled = true
+                }
+            }
+        }
     }
 
 
@@ -188,3 +217,32 @@ extension MobileNumberVC: CountryPickerViewDelegate {
         countryCodeButton.setTitle("\(country.phoneCode)", for: .normal)
     }
 }
+
+
+
+//extension MobileNumberVC: UITextFieldDelegate {
+//
+//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        textField.resignFirstResponder()
+//
+//        guard let text = textField.text, !text.isEmpty else {
+//            return false
+//        }
+//
+//        let phoneNumber = "+995" + text   // თუ ნომერს 5-ით იწყებ
+//
+//        AuthService.shared.startAuth(phoneNumber: phoneNumber) { [weak self] success in
+//            guard success else {
+//                print("❌ Failed to send SMS")
+//                return
+//            }
+//
+//            DispatchQueue.main.async {
+//                let vc = OTPVC()
+//                self?.navigationController?.pushViewController(vc, animated: true)
+//            }
+//        }
+//
+//        return true
+//    }
+//}

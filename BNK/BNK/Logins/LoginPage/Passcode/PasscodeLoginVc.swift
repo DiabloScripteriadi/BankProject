@@ -242,16 +242,17 @@ class LoginPasscodeVC: UIViewController {
     }
     @objc func DidTapLogout() {
         AuthService.shared.signOut { [weak self] error in
-          guard let self = self else { return }
+            guard let self = self else { return }
             if let error = error {
-                AlertManager.showLogoutError(on: self, message: "Error", error: error)
+                AlertManager.showLogoutError(on: self, with: error)
                 return
             }
             if let sceneDelegate = self.view.window?.windowScene?.delegate  as? SceneDelegate {
-                sceneDelegate.CheckAuthentication()
+                sceneDelegate.checkAuthentication()
             }
         }
-       }
+    }
+   
    }
 
 #warning("pascode shi gadasatani delete gilaki 0 ianis adginlas da gasadidbeli")

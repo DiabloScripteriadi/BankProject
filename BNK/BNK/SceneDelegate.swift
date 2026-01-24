@@ -4,106 +4,61 @@
 //
 //  Created by chasemedkcorto on 05.01.26.
 //
-
 import UIKit
 import FirebaseAuth
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
+
     var window: UIWindow?
-    
-    
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        self.setupWindow(with: scene)
-        self.CheckAuthentication()
-        //        guard (scene is UIWindowScene) else { return }
-        //        window = UIWindow(windowScene: scene as! UIWindowScene)
-        //        let nav = UINavigationController(rootViewController: loginVC1())
-        //        window?.rootViewController = nav
-        //        window?.makeKeyAndVisible()
-        //
-        //        let userRequest = RegisterUserRequest (
-        //            username: "mamasheni", email: "123456@gmail.com", pasword: "123456"
-        //
-        //        )
-        //        AuthService.shared.registerUser(with: userRequest) {wasRegisterd, error in
-        //            if let error = error {
-        //                print(error.localizedDescription)
-        //                return
-        //            } else {
-        //                    print("რეგისტრაცია გასულია", wasRegisterd)
-        //            }
-        //}
+
+    func scene(_ scene: UIScene,
+               willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        window = UIWindow(windowScene: windowScene)
+        window?.makeKeyAndVisible()
+
+        goToController(with: OnboardingVC())
     }
-    private func setupWindow(with scene: UIScene) {
-        guard let windowScene = (scene as? UIWindowScene) else {return}
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
-        self.window?.makeKeyAndVisible()
-    }
-    public func CheckAuthentication() {
-        //sign in screenze gadasvla
+
+
+    func checkAuthentication() {
         if Auth.auth().currentUser == nil {
-            let vc = GetStartedVc()
-            let nav = UINavigationController(rootViewController: vc)
-            self.window?.rootViewController = nav
-        }else {
-            //home Screenze gadasvla
-            let vc = loginVC()
-            let nav = UINavigationController(rootViewController: vc)
-            self.window?.rootViewController = nav
+            print("User is NOT logged in")
+            goToController(with: OnboardingVC())
+        } else {
+            print("User IS logged in")
+            goToController(with: MobileNumberVC())
         }
-        
     }
-    private func goToController(with viewController: UIViewController) {
-        guard let window = self.window else { return }
-
-        // ანიმაცია
-        UIView.animate(withDuration: 0.25, animations: {
-            window.layer.opacity = 0
-        }, completion: { _ in
-            // ახალი rootViewController
-            let nav = UINavigationController(rootViewController: viewController)
-            window.rootViewController = nav
-
-            // ანიმაცია უკან დაბრუნებისთვის
-            UIView.animate(withDuration: 0.25) {
-                window.layer.opacity = 1
-            }
-        })
+    func goToMain() {
+        goToController(with: MobileNumberVC())
     }
+    private func goToController(with vc: UIViewController?) {
+    
+        guard let window = window else {
+            print("Error: window is nil")
+            return
+        }
+        guard let vc = vc else {
+            print("Error: vc is nil")
+            return
+        }
 
+        let nav = UINavigationController(rootViewController: vc)
+        window.rootViewController = nav
 
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+        UIView.transition(with: window,
+                          duration: 0.5,
+                          options: .transitionFlipFromRight,
+                          animations: nil)
     }
 
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
-    }
-
-
+    func sceneDidDisconnect(_ scene: UIScene) {}
+    func sceneDidBecomeActive(_ scene: UIScene) {}
+    func sceneWillResignActive(_ scene: UIScene) {}
+    func sceneWillEnterForeground(_ scene: UIScene) {}
+    func sceneDidEnterBackground(_ scene: UIScene) {}
 }
-

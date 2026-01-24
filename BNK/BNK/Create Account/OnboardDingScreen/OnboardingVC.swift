@@ -101,15 +101,15 @@ class OnboardingVC: UIViewController {
         loginBtn.backgroundColor = .systemGray5
         loginBtn.setTitleColor(.black, for: .normal)
         loginBtn.layer.cornerRadius = 12
-
+        loginBtn.addTarget(self, action: #selector(goToLoginPage), for: .touchUpInside)
         getStartedBtn.setTitle("Get Started", for: .normal)
         getStartedBtn.backgroundColor = .black
         getStartedBtn.setTitleColor(.white, for: .normal)
         getStartedBtn.layer.cornerRadius = 12
-
+        getStartedBtn.addTarget(self, action: #selector(goToGetstartedPage), for: .touchUpInside)
         view.addSubview(loginBtn)
         view.addSubview(getStartedBtn)
-
+      
         loginBtn.translatesAutoresizingMaskIntoConstraints = false
         getStartedBtn.translatesAutoresizingMaskIntoConstraints = false
 
@@ -118,12 +118,20 @@ class OnboardingVC: UIViewController {
             loginBtn.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
             loginBtn.heightAnchor.constraint(equalToConstant: 52),
             loginBtn.widthAnchor.constraint(equalTo: getStartedBtn.widthAnchor),
-
+ 
             getStartedBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             getStartedBtn.centerYAnchor.constraint(equalTo: loginBtn.centerYAnchor),
             getStartedBtn.heightAnchor.constraint(equalToConstant: 52),
 
             loginBtn.trailingAnchor.constraint(equalTo: getStartedBtn.leadingAnchor, constant: -16)
         ])
+    }
+    @objc func goToLoginPage() {
+        let vc = loginVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    @objc func goToGetstartedPage() {
+        let vc = GetStartedVc()
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
