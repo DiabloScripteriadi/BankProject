@@ -22,10 +22,11 @@ class PasscodeVC: UIViewController {
     private var dotViews: [UIView] = []
 
     private let keypadStackView = UIStackView()
+    private let keychain = KeychainManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
         setupStepLabel()
         setupDivider()
@@ -39,27 +40,27 @@ class PasscodeVC: UIViewController {
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
         stepLabel.text = "Step 3/5"
-        stepLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-        stepLabel.textColor = .gray
+        stepLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        stepLabel.textColor = .secondaryLabel
         view.addSubview(stepLabel)
 
         NSLayoutConstraint.activate([
-            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             stepLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
 
     private func setupDivider() {
         divider.translatesAutoresizingMaskIntoConstraints = false
-        divider.backgroundColor = .black
-        divider.layer.cornerRadius = 2.5
+        divider.backgroundColor = .label
+        divider.layer.cornerRadius = 2
         view.addSubview(divider)
 
         NSLayoutConstraint.activate([
             divider.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 8),
             divider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4),
-            divider.heightAnchor.constraint(equalToConstant: 5)
+            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.35),
+            divider.heightAnchor.constraint(equalToConstant: 4)
         ])
     }
 
@@ -68,23 +69,24 @@ class PasscodeVC: UIViewController {
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         titleLabel.text = "Create Your Passcode"
-        titleLabel.font = .systemFont(ofSize: 25, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 28, weight: .bold)
+        titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
 
         subtitleLabel.text = "This will be used for logging in"
-        subtitleLabel.font = .systemFont(ofSize: 14)
-        subtitleLabel.textColor = .gray
+        subtitleLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        subtitleLabel.textColor = .secondaryLabel
         subtitleLabel.numberOfLines = 0
 
         view.addSubview(titleLabel)
         view.addSubview(subtitleLabel)
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 35),
+            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 28),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
 
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor)
         ])
@@ -98,29 +100,30 @@ class PasscodeVC: UIViewController {
         view.addSubview(stackView)
 
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
+            stackView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 24),
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            stackView.heightAnchor.constraint(equalToConstant: 56)
+            stackView.heightAnchor.constraint(equalToConstant: 0)
         ])
     }
 
     private func setupDots() {
         dotsStackView.axis = .horizontal
-        dotsStackView.spacing = 10
+        dotsStackView.spacing = 12
         dotsStackView.alignment = .center
         dotsStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(dotsStackView)
 
+        dotViews.removeAll()
         for _ in 0..<maxDigits {
             let dot = UIView()
-            dot.backgroundColor = .lightGray
-            dot.layer.cornerRadius = 6
+            dot.backgroundColor = .tertiarySystemFill
+            dot.layer.cornerRadius = 8
             dot.translatesAutoresizingMaskIntoConstraints = false
 
             NSLayoutConstraint.activate([
-                dot.widthAnchor.constraint(equalToConstant: 12),
-                dot.heightAnchor.constraint(equalToConstant: 12)
+                dot.widthAnchor.constraint(equalToConstant: 16),
+                dot.heightAnchor.constraint(equalToConstant: 16)
             ])
 
             dotsStackView.addArrangedSubview(dot)
@@ -128,7 +131,7 @@ class PasscodeVC: UIViewController {
         }
 
         NSLayoutConstraint.activate([
-            dotsStackView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 40),
+            dotsStackView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 24),
             dotsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
@@ -162,30 +165,43 @@ class PasscodeVC: UIViewController {
         }
 
         NSLayoutConstraint.activate([
-            keypadStackView.topAnchor.constraint(equalTo: dotsStackView.bottomAnchor, constant: 40),
+            keypadStackView.topAnchor.constraint(equalTo: dotsStackView.bottomAnchor, constant: 36),
             keypadStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
 
-
     private func createButton(title: String) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 24, weight: .medium)
-        button.backgroundColor = .tertiarySystemBackground
-        button.layer.cornerRadius = 35
-        button.layer.borderWidth = 2
-        button.titleLabel?.textColor = .black
-        button.layer.borderColor = UIColor.gray.cgColor
+        button.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
+        button.backgroundColor = .secondarySystemBackground
+        button.layer.cornerRadius = 36
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.systemGray4.cgColor
         button.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            button.widthAnchor.constraint(equalToConstant: 70),
-            button.heightAnchor.constraint(equalToConstant: 70)
+            button.widthAnchor.constraint(equalToConstant: 72),
+            button.heightAnchor.constraint(equalToConstant: 72)
         ])
+
+        button.addTarget(self, action: #selector(keyDown(_:)), for: [.touchDown, .touchDragEnter])
+        button.addTarget(self, action: #selector(keyUp(_:)), for: [.touchUpInside, .touchCancel, .touchDragExit])
 
         button.addTarget(self, action: #selector(numberTapped(_:)), for: .touchUpInside)
         return button
+    }
+
+    @objc private func keyDown(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.08) {
+            sender.alpha = 0.6
+        }
+    }
+
+    @objc private func keyUp(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.08) {
+            sender.alpha = 1.0
+        }
     }
 
     @objc private func numberTapped(_ sender: UIButton) {
@@ -212,29 +228,42 @@ class PasscodeVC: UIViewController {
         }
     }
 
-
     private func updateDots() {
         for (index, dot) in dotViews.enumerated() {
-            dot.backgroundColor = index < enteredDigits.count ? .black : .lightGray
+            dot.backgroundColor = index < enteredDigits.count ? .label : .tertiarySystemFill
         }
     }
 
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Verify", for: .normal)
-        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         getStartedButton.setTitleColor(.white, for: .normal)
         getStartedButton.backgroundColor = .systemGray4
-        getStartedButton.layer.cornerRadius = 15
+        getStartedButton.layer.cornerRadius = 14
         getStartedButton.isEnabled = false
+        getStartedButton.addTarget(self, action: #selector(verifyTapped), for: .touchUpInside)
 
         view.addSubview(getStartedButton)
 
         NSLayoutConstraint.activate([
             getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
-            getStartedButton.widthAnchor.constraint(equalToConstant: 300),
-            getStartedButton.heightAnchor.constraint(equalToConstant: 60)
+            getStartedButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 220),
+            getStartedButton.heightAnchor.constraint(equalToConstant: 56)
         ])
+    }
+    
+    @objc private func verifyTapped() {
+        guard enteredDigits.count == maxDigits else { return }
+        let code = enteredDigits.map(String.init).joined()
+        let saved = keychain.savePasscode(code)
+        if saved {
+            
+            let vc = MoreVc()
+            navigationController?.pushViewController(vc, animated: true)
+        } else {
+           print("error")
+        }
     }
 }

@@ -19,7 +19,7 @@ final class MobileNumberVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
         setupStepLabel()
         setupDivider()
@@ -33,46 +33,46 @@ final class MobileNumberVC: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // როცა გვერდიდან გადიხარ, დარწმუნდი რომ კლავიატურა დაიხუროს
         view.endEditing(true)
     }
 
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
         stepLabel.text = "Step 2/5"
-        stepLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-        stepLabel.textColor = .gray
+        stepLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        stepLabel.textColor = .secondaryLabel
         view.addSubview(stepLabel)
 
         NSLayoutConstraint.activate([
-            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             stepLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
 
     private func setupDivider() {
         divider.translatesAutoresizingMaskIntoConstraints = false
-        divider.backgroundColor = .black
-        divider.layer.cornerRadius = 2.5
+        divider.backgroundColor = .label
+        divider.layer.cornerRadius = 2
         view.addSubview(divider)
 
         NSLayoutConstraint.activate([
             divider.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 8),
             divider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4),
-            divider.heightAnchor.constraint(equalToConstant: 5)
+            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.35),
+            divider.heightAnchor.constraint(equalToConstant: 4)
         ])
     }
 
     private func setupTitleLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Whats Your Phone Number?"
-        titleLabel.font = .systemFont(ofSize: 25, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 28, weight: .bold)
         titleLabel.numberOfLines = 0
+        titleLabel.textColor = .label
         view.addSubview(titleLabel)
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 35),
+            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 28),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
@@ -82,11 +82,12 @@ final class MobileNumberVC: UIViewController {
         numberContainer.translatesAutoresizingMaskIntoConstraints = false
         numberContainer.layer.cornerRadius = 12
         numberContainer.layer.borderWidth = 1
-        numberContainer.layer.borderColor = UIColor.systemGray3.cgColor
+        numberContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        numberContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(numberContainer)
 
         NSLayoutConstraint.activate([
-            numberContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40),
+            numberContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 28),
             numberContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             numberContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             numberContainer.heightAnchor.constraint(equalToConstant: 56)
@@ -94,7 +95,7 @@ final class MobileNumberVC: UIViewController {
 
         countryCodeButton.translatesAutoresizingMaskIntoConstraints = false
         countryCodeButton.setTitle("+1", for: .normal)
-        countryCodeButton.setTitleColor(.black, for: .normal)
+        countryCodeButton.setTitleColor(.label, for: .normal)
         countryCodeButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         countryCodeButton.addTarget(self, action: #selector(openCountryPicker), for: .touchUpInside)
         numberContainer.addSubview(countryCodeButton)
@@ -107,17 +108,22 @@ final class MobileNumberVC: UIViewController {
 
         numberFloatingLabel.translatesAutoresizingMaskIntoConstraints = false
         numberFloatingLabel.text = "Phone Number"
-        numberFloatingLabel.font = .systemFont(ofSize: 14)
-        numberFloatingLabel.textColor = .gray
+        numberFloatingLabel.font = .systemFont(ofSize: 13)
+        numberFloatingLabel.textColor = .secondaryLabel
+        numberFloatingLabel.backgroundColor = .systemBackground
+        numberFloatingLabel.layer.cornerRadius = 4
+        numberFloatingLabel.layer.masksToBounds = true
         numberContainer.addSubview(numberFloatingLabel)
 
         NSLayoutConstraint.activate([
             numberFloatingLabel.leadingAnchor.constraint(equalTo: countryCodeButton.trailingAnchor, constant: 8),
-            numberFloatingLabel.centerYAnchor.constraint(equalTo: numberContainer.centerYAnchor)
+            numberFloatingLabel.centerYAnchor.constraint(equalTo: numberContainer.centerYAnchor),
+            numberFloatingLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16)
         ])
 
         numberTextField.translatesAutoresizingMaskIntoConstraints = false
         numberTextField.keyboardType = .phonePad
+        numberTextField.textColor = .label
         numberTextField.addTarget(self, action: #selector(numberChanged), for: .editingChanged)
         numberTextField.addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
         numberContainer.addSubview(numberTextField)
@@ -133,10 +139,10 @@ final class MobileNumberVC: UIViewController {
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Get Started", for: .normal)
-        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         getStartedButton.setTitleColor(.white, for: .normal)
         getStartedButton.backgroundColor = .systemGray4
-        getStartedButton.layer.cornerRadius = 15
+        getStartedButton.layer.cornerRadius = 14
         getStartedButton.isEnabled = false
         getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
         view.addSubview(getStartedButton)
@@ -152,7 +158,7 @@ final class MobileNumberVC: UIViewController {
     private func setupCountryPicker() {
         countryPickerView.delegate = self
     }
-// gamoviyenet chatgpt dros ar davkargavdi
+
     private func setupKeyboardToolbar() {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -188,8 +194,8 @@ final class MobileNumberVC: UIViewController {
 
         print("📱 Trying phone number:", phoneNumber)
 
-        
         getStartedButton.isEnabled = false
+        getStartedButton.backgroundColor = .systemGray4
 
         AuthService.shared.startAuth(phoneNumber: phoneNumber) { [weak self] success in
             DispatchQueue.main.async {
@@ -201,6 +207,7 @@ final class MobileNumberVC: UIViewController {
                 } else {
                     print(" Failed to generate verification ID")
                     self.getStartedButton.isEnabled = true
+                    self.getStartedButton.backgroundColor = .black
                 }
             }
         }

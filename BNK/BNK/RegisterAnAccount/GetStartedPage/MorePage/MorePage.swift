@@ -45,7 +45,7 @@ class MoreVc: UIViewController {
  
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupDate()
         setupDatePicker()
         setupStepLabel()
@@ -61,12 +61,12 @@ class MoreVc: UIViewController {
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
         stepLabel.text = "Step 4/5"
-        stepLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-        stepLabel.textColor = .gray
+        stepLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        stepLabel.textColor = .secondaryLabel
         view.addSubview(stepLabel)
 
         NSLayoutConstraint.activate([
-            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             stepLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
@@ -74,7 +74,7 @@ class MoreVc: UIViewController {
   
     private func setupDivider() {
         divider.translatesAutoresizingMaskIntoConstraints = false
-        divider.backgroundColor = .black
+        divider.backgroundColor = .label
         view.addSubview(divider)
 
         NSLayoutConstraint.activate([
@@ -89,12 +89,13 @@ class MoreVc: UIViewController {
     private func setupTitleLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Just a little bit more about yourself"
-        titleLabel.font = .systemFont(ofSize: 24, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 28, weight: .bold)
         titleLabel.numberOfLines = 0
+        titleLabel.textColor = .label
         view.addSubview(titleLabel)
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 32),
+            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 28),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
@@ -103,8 +104,8 @@ class MoreVc: UIViewController {
     private func setupMinyLabel() {
         minyLabel.translatesAutoresizingMaskIntoConstraints = false
         minyLabel.text = "We need some additional information from you to secure your account."
-        minyLabel.font = .systemFont(ofSize: 14)
-        minyLabel.textColor = .gray
+        minyLabel.font = .systemFont(ofSize: 16)
+        minyLabel.textColor = .secondaryLabel
         minyLabel.numberOfLines = 0
         minyLabel.textAlignment = .center
         view.addSubview(minyLabel)
@@ -120,13 +121,14 @@ class MoreVc: UIViewController {
     private func setupNameField() {
 
         nameContainer.translatesAutoresizingMaskIntoConstraints = false
-        nameContainer.layer.cornerRadius = 10
+        nameContainer.layer.cornerRadius = 12
         nameContainer.layer.borderWidth = 1
-        nameContainer.layer.borderColor = UIColor.gray.cgColor
+        nameContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        nameContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(nameContainer)
 
         NSLayoutConstraint.activate([
-            nameContainer.topAnchor.constraint(equalTo: minyLabel.bottomAnchor, constant: 32),
+            nameContainer.topAnchor.constraint(equalTo: minyLabel.bottomAnchor, constant: 24),
             nameContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameContainer.heightAnchor.constraint(equalToConstant: 56)
@@ -134,9 +136,11 @@ class MoreVc: UIViewController {
 
         nameFloatingLabel.translatesAutoresizingMaskIntoConstraints = false
         nameFloatingLabel.text = "First Name"
-        nameFloatingLabel.font = .systemFont(ofSize: 14)
-        nameFloatingLabel.textColor = .gray
-        nameFloatingLabel.backgroundColor = .white
+        nameFloatingLabel.font = .systemFont(ofSize: 13)
+        nameFloatingLabel.textColor = .secondaryLabel
+        nameFloatingLabel.backgroundColor = .systemBackground
+        nameFloatingLabel.layer.cornerRadius = 4
+        nameFloatingLabel.layer.masksToBounds = true
         nameContainer.addSubview(nameFloatingLabel)
 
         nameTextfield.translatesAutoresizingMaskIntoConstraints = false
@@ -146,6 +150,7 @@ class MoreVc: UIViewController {
         NSLayoutConstraint.activate([
             nameFloatingLabel.leadingAnchor.constraint(equalTo: nameContainer.leadingAnchor, constant: 12),
             nameFloatingLabel.centerYAnchor.constraint(equalTo: nameContainer.centerYAnchor),
+            nameFloatingLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16),
 
             nameTextfield.leadingAnchor.constraint(equalTo: nameContainer.leadingAnchor, constant: 12),
             nameTextfield.trailingAnchor.constraint(equalTo: nameContainer.trailingAnchor, constant: -12),
@@ -158,13 +163,14 @@ class MoreVc: UIViewController {
     private func setupLastField() {
 
         lastContainer.translatesAutoresizingMaskIntoConstraints = false
-        lastContainer.layer.cornerRadius = 10
+        lastContainer.layer.cornerRadius = 12
         lastContainer.layer.borderWidth = 1
-        lastContainer.layer.borderColor = UIColor.gray.cgColor
+        lastContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        lastContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(lastContainer)
 
         NSLayoutConstraint.activate([
-            lastContainer.topAnchor.constraint(equalTo: nameContainer.bottomAnchor, constant: 20),
+            lastContainer.topAnchor.constraint(equalTo: nameContainer.bottomAnchor, constant: 16),
             lastContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             lastContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             lastContainer.heightAnchor.constraint(equalToConstant: 56)
@@ -172,9 +178,11 @@ class MoreVc: UIViewController {
 
         lastFloatingLabel.translatesAutoresizingMaskIntoConstraints = false
         lastFloatingLabel.text = "Last Name"
-        lastFloatingLabel.font = .systemFont(ofSize: 14)
-        lastFloatingLabel.textColor = .gray
-        lastFloatingLabel.backgroundColor = .white
+        lastFloatingLabel.font = .systemFont(ofSize: 13)
+        lastFloatingLabel.textColor = .secondaryLabel
+        lastFloatingLabel.backgroundColor = .systemBackground
+        lastFloatingLabel.layer.cornerRadius = 4
+        lastFloatingLabel.layer.masksToBounds = true
         lastContainer.addSubview(lastFloatingLabel)
 
         lastTextfield.translatesAutoresizingMaskIntoConstraints = false
@@ -184,6 +192,7 @@ class MoreVc: UIViewController {
         NSLayoutConstraint.activate([
             lastFloatingLabel.leadingAnchor.constraint(equalTo: lastContainer.leadingAnchor, constant: 12),
             lastFloatingLabel.centerYAnchor.constraint(equalTo: lastContainer.centerYAnchor),
+            lastFloatingLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16),
 
             lastTextfield.leadingAnchor.constraint(equalTo: lastContainer.leadingAnchor, constant: 12),
             lastTextfield.trailingAnchor.constraint(equalTo: lastContainer.trailingAnchor, constant: -12),
@@ -195,7 +204,7 @@ class MoreVc: UIViewController {
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Get Started", for: .normal)
-        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         getStartedButton.setTitleColor(.white, for: .normal)
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 14

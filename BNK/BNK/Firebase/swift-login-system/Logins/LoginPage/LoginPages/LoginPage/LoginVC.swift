@@ -31,7 +31,7 @@ class loginVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         setupStepLabel()
         setupDivider()
@@ -65,7 +65,7 @@ class loginVC: UIViewController {
     private func setupForgotPasswordButton() {
         forgotPasswordButton.translatesAutoresizingMaskIntoConstraints = false
         forgotPasswordButton.setTitle("Forgot Password?", for: .normal)
-        forgotPasswordButton.setTitleColor(.black, for: .normal)
+        forgotPasswordButton.setTitleColor(.label, for: .normal)
         forgotPasswordButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
         forgotPasswordButton.contentHorizontalAlignment = .right
         
@@ -80,19 +80,19 @@ class loginVC: UIViewController {
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
         stepLabel.text = "Step 1/2"
-        stepLabel.font = .systemFont(ofSize: 14, weight: .semibold)
-        stepLabel.textColor = .gray
+        stepLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        stepLabel.textColor = .secondaryLabel
         view.addSubview(stepLabel)
         
         NSLayoutConstraint.activate([
-            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             stepLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
     
     private func setupDivider() {
         divider.translatesAutoresizingMaskIntoConstraints = false
-        divider.backgroundColor = .black
+        divider.backgroundColor = .label
         view.addSubview(divider)
         
         NSLayoutConstraint.activate([
@@ -106,12 +106,13 @@ class loginVC: UIViewController {
     private func setupTitleLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Login To your Account"
-        titleLabel.font = .systemFont(ofSize: 25, weight: .semibold)
+        titleLabel.font = .systemFont(ofSize: 28, weight: .bold)
         titleLabel.numberOfLines = 0
+        titleLabel.textColor = .label
         view.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 35),
+            titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 28),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
@@ -120,13 +121,14 @@ class loginVC: UIViewController {
     
     private func setupEmailField() {
         emailContainer.translatesAutoresizingMaskIntoConstraints = false
-        emailContainer.layer.cornerRadius = 10
+        emailContainer.layer.cornerRadius = 12
         emailContainer.layer.borderWidth = 1
-        emailContainer.layer.borderColor = UIColor.gray.cgColor
+        emailContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        emailContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(emailContainer)
         
         NSLayoutConstraint.activate([
-            emailContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40),
+            emailContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 28),
             emailContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             emailContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             emailContainer.heightAnchor.constraint(equalToConstant: 56)
@@ -134,19 +136,24 @@ class loginVC: UIViewController {
         
         emailFloatingLabel.translatesAutoresizingMaskIntoConstraints = false
         emailFloatingLabel.text = "Email Addresss"
-        emailFloatingLabel.font = .systemFont(ofSize: 14)
-        emailFloatingLabel.textColor = .gray
+        emailFloatingLabel.font = .systemFont(ofSize: 13)
+        emailFloatingLabel.textColor = .secondaryLabel
+        emailFloatingLabel.backgroundColor = .systemBackground
+        emailFloatingLabel.layer.cornerRadius = 4
+        emailFloatingLabel.layer.masksToBounds = true
         emailContainer.addSubview(emailFloatingLabel)
         
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         emailTextField.keyboardType = .emailAddress
         emailTextField.autocapitalizationType = .none
+        emailTextField.textColor = .label
         emailTextField.addTarget(self, action: #selector(emailChanged), for: .editingChanged)
         emailContainer.addSubview(emailTextField)
         
         NSLayoutConstraint.activate([
             emailFloatingLabel.leadingAnchor.constraint(equalTo: emailContainer.leadingAnchor, constant: 12),
             emailFloatingLabel.centerYAnchor.constraint(equalTo: emailContainer.centerYAnchor),
+            emailFloatingLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16),
             
             emailTextField.leadingAnchor.constraint(equalTo: emailContainer.leadingAnchor, constant: 12),
             emailTextField.trailingAnchor.constraint(equalTo: emailContainer.trailingAnchor, constant: -12),
@@ -158,13 +165,14 @@ class loginVC: UIViewController {
     
     private func setupPasswordField() {
         passwordContainer.translatesAutoresizingMaskIntoConstraints = false
-        passwordContainer.layer.cornerRadius = 10
+        passwordContainer.layer.cornerRadius = 12
         passwordContainer.layer.borderWidth = 1
-        passwordContainer.layer.borderColor = UIColor.gray.cgColor
+        passwordContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        passwordContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(passwordContainer)
         
         NSLayoutConstraint.activate([
-            passwordContainer.topAnchor.constraint(equalTo: emailContainer.bottomAnchor, constant: 24),
+            passwordContainer.topAnchor.constraint(equalTo: emailContainer.bottomAnchor, constant: 16),
             passwordContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             passwordContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             passwordContainer.heightAnchor.constraint(equalToConstant: 56)
@@ -172,25 +180,30 @@ class loginVC: UIViewController {
         
         passwordFloatingLabel.translatesAutoresizingMaskIntoConstraints = false
         passwordFloatingLabel.text = "Password"
-        passwordFloatingLabel.font = .systemFont(ofSize: 14)
-        passwordFloatingLabel.textColor = .gray
+        passwordFloatingLabel.font = .systemFont(ofSize: 13)
+        passwordFloatingLabel.textColor = .secondaryLabel
+        passwordFloatingLabel.backgroundColor = .systemBackground
+        passwordFloatingLabel.layer.cornerRadius = 4
+        passwordFloatingLabel.layer.masksToBounds = true
+        view.addSubview(passwordFloatingLabel)
         passwordContainer.addSubview(passwordFloatingLabel)
         
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         passwordTextField.isSecureTextEntry = true
+        passwordTextField.textColor = .label
         passwordTextField.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
         passwordContainer.addSubview(passwordTextField)
         
-        // Eye Button
         passwordToggleButton.translatesAutoresizingMaskIntoConstraints = false
         passwordToggleButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        passwordToggleButton.tintColor = .gray
+        passwordToggleButton.tintColor = .tertiaryLabel
         passwordToggleButton.addTarget(self, action: #selector(togglePassword), for: .touchUpInside)
         passwordContainer.addSubview(passwordToggleButton)
         
         NSLayoutConstraint.activate([
             passwordFloatingLabel.leadingAnchor.constraint(equalTo: passwordContainer.leadingAnchor, constant: 12),
             passwordFloatingLabel.centerYAnchor.constraint(equalTo: passwordContainer.centerYAnchor),
+            passwordFloatingLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16),
             
             passwordToggleButton.trailingAnchor.constraint(equalTo: passwordContainer.trailingAnchor, constant: -12),
             passwordToggleButton.centerYAnchor.constraint(equalTo: passwordContainer.centerYAnchor),
@@ -208,10 +221,10 @@ class loginVC: UIViewController {
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Login", for: .normal)
-        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         getStartedButton.setTitleColor(.white, for: .normal)
         getStartedButton.backgroundColor = .systemGray4
-        getStartedButton.layer.cornerRadius = 15
+        getStartedButton.layer.cornerRadius = 14
         getStartedButton.isEnabled = false
         getStartedButton.addTarget(self, action: #selector(didTapSignIn), for: .touchUpInside)
         
