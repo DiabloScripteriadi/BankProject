@@ -259,7 +259,6 @@ class PasscodeVC: UIViewController {
         let code = enteredDigits.map(String.init).joined()
         let saved = keychain.savePasscode(code)
         if saved {
-            
             let vc = MoreVc()
             navigationController?.pushViewController(vc, animated: true)
         } else {

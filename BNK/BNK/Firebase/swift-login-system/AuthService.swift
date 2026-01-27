@@ -34,7 +34,8 @@ class AuthService {
             let data: [String: Any] = [
                 "username": userRequest.username,
                 "email": user.email ?? "",
-                "phone": user.phoneNumber ?? ""
+                "phone": user.phoneNumber ?? "",
+                "createdAt": FieldValue.serverTimestamp()
             ]
             
             self?.db.collection("users")
@@ -44,6 +45,26 @@ class AuthService {
                 }
         }
     }
+    func updateUserProfile(email:String,username: String, lastName: String, birthDate: Date, completion: @escaping (Bool, Error?) -> Void) {
+        guard let uid = auth.currentUser?.uid else {
+            completion(false, NSError(domain: "AuthService", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
+            return
+        }
+        
+        let data: [String: Any] = [
+            "email": email,
+            "username": username,
+            "lastName": lastName,
+            "birthDate": Timestamp(date: birthDate),
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+        
+        db.collection("users")
+            .document(uid)
+            .setData(data, merge: true) { error in
+                completion(error == nil, error)
+            }
+    }
     
     // Phone Auth (Start)
     func startAuth(phoneNumber: String, completion: @escaping (Bool) -> Void) {
@@ -51,7 +72,7 @@ class AuthService {
         
         PhoneAuthProvider.provider()
             .verifyPhoneNumber(phoneNumber, uiDelegate: nil) { [weak self] verificationID, error in
-                // Save the exact number user entered
+
                 self?.currentPhoneNumber = phoneNumber
                 
                 if let error = error {
@@ -92,10 +113,10 @@ class AuthService {
                 return
             }
             
-            // Save the phone number the user actually entered
             let data: [String: Any] = [
                 "phone": self.currentPhoneNumber ?? "",
-                "email": user.email ?? ""
+                "email": user.email ?? "",
+                "updatedAt": FieldValue.serverTimestamp()
             ]
             
             self.db.collection("users")

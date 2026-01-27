@@ -168,7 +168,6 @@ class SecureVC: UIViewController {
             faceIDChevron.heightAnchor.constraint(equalToConstant: 18)
         ])
 
-        // Interaction
         faceIDCard.addTarget(self, action: #selector(faceIDTapped), for: .touchUpInside)
     }
 

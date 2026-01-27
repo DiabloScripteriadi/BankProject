@@ -34,9 +34,10 @@ class GetStartedVc: UIViewController {
         setupEmailField()
         setupPasswordField()
         setupGetStartedButton()
+        setupKeyboardToolbar()
+        setupTapToDismiss()
     }
 
-    // MARK: - Header
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
         stepLabel.text = "Step 1/5"
@@ -92,7 +93,7 @@ class GetStartedVc: UIViewController {
         ])
     }
 
-    // MARK: - Email
+
     private func setupEmailField() {
         emailContainer.translatesAutoresizingMaskIntoConstraints = false
         emailContainer.layer.cornerRadius = 12
@@ -126,7 +127,7 @@ class GetStartedVc: UIViewController {
         emailContainer.addSubview(emailTextField)
 
         NSLayoutConstraint.activate([
-            // floating label slightly above the field baseline
+            
             emailFloatingLabel.leadingAnchor.constraint(equalTo: emailContainer.leadingAnchor, constant: 14),
             emailFloatingLabel.centerYAnchor.constraint(equalTo: emailContainer.centerYAnchor),
             emailFloatingLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16),
@@ -138,7 +139,6 @@ class GetStartedVc: UIViewController {
         ])
     }
 
-    // MARK: - Password
     private func setupPasswordField() {
         passwordContainer.translatesAutoresizingMaskIntoConstraints = false
         passwordContainer.layer.cornerRadius = 12
@@ -193,7 +193,7 @@ class GetStartedVc: UIViewController {
         ])
     }
 
-    // MARK: - Button
+    
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Get Started", for: .normal)
@@ -214,7 +214,7 @@ class GetStartedVc: UIViewController {
         ])
     }
 
-    // MARK: - Actions
+
     @objc private func didTapSignUp() {
         let registerUserRequest = RegisterUserRequest(username: "", email: self.emailTextField.text ?? "", password: self.passwordTextField.text ?? "")
 
@@ -241,6 +241,30 @@ class GetStartedVc: UIViewController {
         }
     }
 
+    private func setupKeyboardToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.items = [flex, done]
+        emailTextField.inputAccessoryView = toolbar
+        passwordTextField.inputAccessoryView = toolbar
+    }
+    
+    private func setupTapToDismiss() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc private func doneTapped() {
+        view.endEditing(true)
+    }
+
+    @objc private func handleBackgroundTap() {
+        view.endEditing(true)
+    }
+    
     @objc private func emailChanged() {
         animate(label: emailFloatingLabel, in: emailContainer, hasText: !(emailTextField.text?.isEmpty ?? true))
         updateButtonState()
@@ -259,7 +283,6 @@ class GetStartedVc: UIViewController {
     }
 
     private func animate(label: UILabel, in container: UIView, hasText: Bool) {
-        // მსუბუქი, მაგრამ მკაფიო floating effect
         UIView.animate(withDuration: 0.22, delay: 0, options: [.curveEaseInOut]) {
             label.transform = hasText
                 ? CGAffineTransform(translationX: 0, y: -18).scaledBy(x: 0.88, y: 0.88)

@@ -1,14 +1,7 @@
-//
-//  LoginVC.swift
-//  BNK
-//
-//  Created by chasemedkcorto on 12.01.26.
-//
 import UIKit
 import FirebaseAuth
 
 class loginVC: UIViewController {
-    
     
     private let stepLabel = UILabel()
     private let divider = UIView()
@@ -41,19 +34,15 @@ class loginVC: UIViewController {
         setupGetStartedButton()
         setupForgotPasswordButton()
         setupRemember()
+        setupKeyboardToolbar()
+        setupTapToDismiss()
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = true
-        
     }
-    //    private func checkBox() {
-    //        let checkbox = CircularCheckbox(frame: CGRect(x: 70, y: 200, width: 70, height: 70))
-    //        label.text = "sss"
-    //        view.addSubview(checkbox)
-    //        view.addSubview(label)
-    //        let label1 = UILabel(frame: CGRect(x: 150, y: 200, width: 200, height: 70))
-    //    }
+    
     private func setupRemember() {
         view.addSubview(rememberButton)
         rememberButton.translatesAutoresizingMaskIntoConstraints = false
@@ -62,15 +51,14 @@ class loginVC: UIViewController {
             rememberButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
         ])
     }
+    
     private func setupForgotPasswordButton() {
         forgotPasswordButton.translatesAutoresizingMaskIntoConstraints = false
         forgotPasswordButton.setTitle("Forgot Password?", for: .normal)
         forgotPasswordButton.setTitleColor(.label, for: .normal)
         forgotPasswordButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
         forgotPasswordButton.contentHorizontalAlignment = .right
-        
         view.addSubview(forgotPasswordButton)
-        
         NSLayoutConstraint.activate([
             forgotPasswordButton.topAnchor.constraint(equalTo: passwordContainer.bottomAnchor, constant: 8),
             forgotPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
@@ -83,7 +71,6 @@ class loginVC: UIViewController {
         stepLabel.font = .systemFont(ofSize: 13, weight: .semibold)
         stepLabel.textColor = .secondaryLabel
         view.addSubview(stepLabel)
-        
         NSLayoutConstraint.activate([
             stepLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             stepLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
@@ -94,11 +81,10 @@ class loginVC: UIViewController {
         divider.translatesAutoresizingMaskIntoConstraints = false
         divider.backgroundColor = .label
         view.addSubview(divider)
-        
         NSLayoutConstraint.activate([
             divider.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 8),
             divider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6   ),
+            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6),
             divider.heightAnchor.constraint(equalToConstant: 5)
         ])
     }
@@ -110,14 +96,12 @@ class loginVC: UIViewController {
         titleLabel.numberOfLines = 0
         titleLabel.textColor = .label
         view.addSubview(titleLabel)
-        
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 28),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
-    
     
     private func setupEmailField() {
         emailContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -126,7 +110,6 @@ class loginVC: UIViewController {
         emailContainer.layer.borderColor = UIColor.systemGray4.cgColor
         emailContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(emailContainer)
-        
         NSLayoutConstraint.activate([
             emailContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 28),
             emailContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -162,7 +145,6 @@ class loginVC: UIViewController {
         ])
     }
     
-    
     private func setupPasswordField() {
         passwordContainer.translatesAutoresizingMaskIntoConstraints = false
         passwordContainer.layer.cornerRadius = 12
@@ -170,7 +152,6 @@ class loginVC: UIViewController {
         passwordContainer.layer.borderColor = UIColor.systemGray4.cgColor
         passwordContainer.backgroundColor = .secondarySystemBackground
         view.addSubview(passwordContainer)
-        
         NSLayoutConstraint.activate([
             passwordContainer.topAnchor.constraint(equalTo: emailContainer.bottomAnchor, constant: 16),
             passwordContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -217,7 +198,6 @@ class loginVC: UIViewController {
         ])
     }
     
-    
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Login", for: .normal)
@@ -227,10 +207,7 @@ class loginVC: UIViewController {
         getStartedButton.layer.cornerRadius = 14
         getStartedButton.isEnabled = false
         getStartedButton.addTarget(self, action: #selector(didTapSignIn), for: .touchUpInside)
-        
-        
         view.addSubview(getStartedButton)
-        
         NSLayoutConstraint.activate([
             getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
@@ -238,49 +215,42 @@ class loginVC: UIViewController {
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
-    //selectorebi romelitac funqcionali ketdeba
     
     @objc private func didTapSignIn() {
-
         let email = emailTextField.text ?? ""
         let password = passwordTextField.text ?? ""
-
         guard Validator.isValidEmail(email) else {
             AlertManager.showInvalidEmailAlert(on: self)
             return
         }
-
         guard Validator.isValidPassword(password) else {
             AlertManager.showInvalidPasswordAlert(on: self)
             return
         }
-
         let request = LoginUSerRequest(email: email, password: password)
-
         AuthService.shared.signIn(with: request) { [weak self] error in
             guard let self = self else { return }
-
             if let error = error {
                 AlertManager.showSignInErrorAlert(on: self, with: error)
                 return
             }
-
-            // ✅ წარმატებით დალოგინდა
             if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                sceneDelegate.goToMain()
+                let vc  = LoginPasscodeVC()
+                self.navigationController!.pushViewController(vc, animated: true)
             }
         }
     }
-
     
     @objc private func didTapNewUser() {
         let vc = GetStartedVc()
         navigationController?.pushViewController(vc, animated: true)
     }
+    
     @objc private func didTapForgotPassword() {
         let vc = ForgotPaswordVC()
         navigationController?.pushViewController(vc, animated: true)
     }
+    
     @objc private func emailChanged() {
         animate(label: emailFloatingLabel, hasText: !(emailTextField.text?.isEmpty ?? true))
         updateButtonState()
@@ -297,7 +267,6 @@ class loginVC: UIViewController {
         passwordToggleButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
     
-    
     private func animate(label: UILabel, hasText: Bool) {
         UIView.animate(withDuration: 0.25) {
             label.transform = hasText
@@ -309,10 +278,33 @@ class loginVC: UIViewController {
     private func updateButtonState() {
         let enabled = !(emailTextField.text?.isEmpty ?? true) &&
         !(passwordTextField.text?.isEmpty ?? true)
-        
         UIView.animate(withDuration: 0.25) {
             self.getStartedButton.isEnabled = enabled
             self.getStartedButton.backgroundColor = enabled ? .black : .systemGray4
         }
+    }
+    
+    private func setupKeyboardToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.items = [flex, done]
+        emailTextField.inputAccessoryView = toolbar
+        passwordTextField.inputAccessoryView = toolbar
+    }
+    
+    private func setupTapToDismiss() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc private func doneTapped() {
+        view.endEditing(true)
+    }
+    
+    @objc private func handleBackgroundTap() {
+        view.endEditing(true)
     }
 }

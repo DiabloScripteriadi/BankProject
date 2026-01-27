@@ -5,7 +5,6 @@
 //  Created by chasemedkcorto on 14.01.26.
 //
 
-
 import UIKit
 
 class LoginPasscodeVC: UIViewController {
@@ -25,6 +24,10 @@ class LoginPasscodeVC: UIViewController {
 
     private let keypadStackView = UIStackView()
 
+    private let passcodeService = "com.yourcompany.bnk.passcode"
+    private let passcodeAccount = "user-passcode"
+    private var storedPasscode: String?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -36,6 +39,11 @@ class LoginPasscodeVC: UIViewController {
         setupDots()
         setupKeypad()
         setupGetStartedButton()
+        loadStoredPasscode()
+    }
+
+    private func loadStoredPasscode() {
+        storedPasscode = KeychainManager.shared.getPasscode()
     }
 
     private func setupStepLabel() {
@@ -147,7 +155,7 @@ class LoginPasscodeVC: UIViewController {
             [1, 2, 3],
             [4, 5, 6],
             [7, 8, 9],
-            [ 0, "⌫",]
+            [0, "⌫"]
         ]
 
         for row in numbers {
@@ -170,7 +178,6 @@ class LoginPasscodeVC: UIViewController {
         ])
     }
 
-
     private func createButton(title: String) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
@@ -189,7 +196,6 @@ class LoginPasscodeVC: UIViewController {
 
         button.addTarget(self, action: #selector(keyDown(_:)), for: [.touchDown, .touchDragEnter])
         button.addTarget(self, action: #selector(keyUp(_:)), for: [.touchUpInside, .touchCancel, .touchDragExit])
-
         button.addTarget(self, action: #selector(numberTapped(_:)), for: .touchUpInside)
         return button
     }
@@ -212,9 +218,8 @@ class LoginPasscodeVC: UIViewController {
         if text == "⌫" {
             guard !enteredDigits.isEmpty else { return }
             enteredDigits.removeLast()
-            getStartedButton.isEnabled = false
-            getStartedButton.backgroundColor = .systemGray4
             updateDots()
+            evaluatePasscodeState()
             return
         }
 
@@ -223,18 +228,39 @@ class LoginPasscodeVC: UIViewController {
 
         enteredDigits.append(number)
         updateDots()
-
-        if enteredDigits.count == maxDigits {
-            getStartedButton.isEnabled = true
-            getStartedButton.backgroundColor = .black
-        }
+        evaluatePasscodeState()
     }
 
+    private func evaluatePasscodeState() {
+        if enteredDigits.count == maxDigits {
+            let entered = enteredDigits.map(String.init).joined()
+            if let stored = storedPasscode, stored == entered {
+                getStartedButton.isEnabled = true
+                getStartedButton.backgroundColor = .black
+            } else {
+                getStartedButton.isEnabled = false
+                getStartedButton.backgroundColor = .systemGray4
+                shakeDots()
+                enteredDigits.removeAll()
+                updateDots()
+            }
+        } else {
+            getStartedButton.isEnabled = false
+            getStartedButton.backgroundColor = .systemGray4
+        }
+    }
 
     private func updateDots() {
         for (index, dot) in dotViews.enumerated() {
             dot.backgroundColor = index < enteredDigits.count ? .label : .tertiarySystemFill
         }
+    }
+
+    private func shakeDots() {
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.values = [-8, 8, -6, 6, -3, 3, 0]
+        animation.duration = 0.3
+        dotsStackView.layer.add(animation, forKey: "shake")
     }
 
     private func setupGetStartedButton() {
@@ -254,8 +280,8 @@ class LoginPasscodeVC: UIViewController {
             getStartedButton.widthAnchor.constraint(equalToConstant: 300),
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-        
     }
+
     @objc func DidTapLogout() {
         AuthService.shared.signOut { [weak self] error in
             guard let self = self else { return }
@@ -263,12 +289,11 @@ class LoginPasscodeVC: UIViewController {
                 AlertManager.showLogoutError(on: self, with: error)
                 return
             }
-            if let sceneDelegate = self.view.window?.windowScene?.delegate  as? SceneDelegate {
-                sceneDelegate.checkAuthentication()
+            if self.view.window?.windowScene?.delegate  is SceneDelegate {
+                let vc = EmailLoadingVc()
+                self.navigationController!.pushViewController(vc, animated: true)
             }
         }
     }
-   
-   }
-
-#warning("pascode shi gadasatani delete gilaki 0 ianis adginlas da gasadidbeli")
+}
+#warning("დასამატებელია account info აუცილებლად დრო არ დავკარგავთ მაგაზე ")

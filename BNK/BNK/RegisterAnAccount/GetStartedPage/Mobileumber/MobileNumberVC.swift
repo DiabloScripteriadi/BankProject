@@ -33,6 +33,7 @@ final class MobileNumberVC: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
         view.endEditing(true)
     }
 
@@ -159,6 +160,8 @@ final class MobileNumberVC: UIViewController {
         countryPickerView.delegate = self
     }
 
+// gamoviyenet chatgpt dros ar davkargavdi
+
     private func setupKeyboardToolbar() {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -194,8 +197,13 @@ final class MobileNumberVC: UIViewController {
 
         print("📱 Trying phone number:", phoneNumber)
 
+
         getStartedButton.isEnabled = false
         getStartedButton.backgroundColor = .systemGray4
+
+        
+        getStartedButton.isEnabled = false
+
 
         AuthService.shared.startAuth(phoneNumber: phoneNumber) { [weak self] success in
             DispatchQueue.main.async {

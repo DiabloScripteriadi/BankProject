@@ -5,6 +5,7 @@
 //  Created by chasemedkcorto on 11.01.26.
 //
 import UIKit
+import FirebaseAuth
 
 class MoreVc: UIViewController {
 
@@ -28,24 +29,26 @@ class MoreVc: UIViewController {
         textField.borderStyle = .roundedRect
         textField.layer.cornerRadius = 10
         textField.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
+        textField.tintColor = .systemBlue
         return textField
     }()
 
     private let datePicker = UIDatePicker()
+    private var selectedBirthDate: Date?
+
     private func setupDatePicker() {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .wheels
-
-        datePicker.addTarget(self,action: #selector(dateChange(_:)),for: .valueChanged)
         datePicker.maximumDate = Date()
+        datePicker.addTarget(self, action: #selector(dateChange(_:)), for: .valueChanged)
         dateTextfield.inputView = datePicker
+        addToolbar()
     }
 
- 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
         setupDate()
         setupDatePicker()
         setupStepLabel()
@@ -55,8 +58,11 @@ class MoreVc: UIViewController {
         setupNameField()
         setupLastField()
         setupGetStartedButton()
-    }
 
+        nameTextfield.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
+        lastTextfield.addTarget(self, action: #selector(lastChanged), for: .editingChanged)
+        dateTextfield.addTarget(self, action: #selector(dateTextChangedManually), for: .editingChanged)
+    }
 
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +77,6 @@ class MoreVc: UIViewController {
         ])
     }
 
-  
     private func setupDivider() {
         divider.translatesAutoresizingMaskIntoConstraints = false
         divider.backgroundColor = .label
@@ -85,7 +90,6 @@ class MoreVc: UIViewController {
         ])
     }
 
-    
     private func setupTitleLabel() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Just a little bit more about yourself"
@@ -117,9 +121,7 @@ class MoreVc: UIViewController {
         ])
     }
 
-
     private func setupNameField() {
-
         nameContainer.translatesAutoresizingMaskIntoConstraints = false
         nameContainer.layer.cornerRadius = 12
         nameContainer.layer.borderWidth = 1
@@ -144,7 +146,6 @@ class MoreVc: UIViewController {
         nameContainer.addSubview(nameFloatingLabel)
 
         nameTextfield.translatesAutoresizingMaskIntoConstraints = false
-        nameTextfield.addTarget(self, action: #selector(nameChanged), for: .editingChanged)
         nameContainer.addSubview(nameTextfield)
 
         NSLayoutConstraint.activate([
@@ -159,9 +160,7 @@ class MoreVc: UIViewController {
         ])
     }
 
-
     private func setupLastField() {
-
         lastContainer.translatesAutoresizingMaskIntoConstraints = false
         lastContainer.layer.cornerRadius = 12
         lastContainer.layer.borderWidth = 1
@@ -186,7 +185,6 @@ class MoreVc: UIViewController {
         lastContainer.addSubview(lastFloatingLabel)
 
         lastTextfield.translatesAutoresizingMaskIntoConstraints = false
-        lastTextfield.addTarget(self, action: #selector(lastChanged), for: .editingChanged)
         lastContainer.addSubview(lastTextfield)
 
         NSLayoutConstraint.activate([
@@ -203,12 +201,13 @@ class MoreVc: UIViewController {
 
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
-        getStartedButton.setTitle("Get Started", for: .normal)
+        getStartedButton.setTitle("Continue", for: .normal)
         getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         getStartedButton.setTitleColor(.white, for: .normal)
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 14
         getStartedButton.isEnabled = false
+        getStartedButton.addTarget(self, action: #selector(saveProfile), for: .touchUpInside)
         view.addSubview(getStartedButton)
 
         NSLayoutConstraint.activate([
@@ -218,6 +217,7 @@ class MoreVc: UIViewController {
             getStartedButton.heightAnchor.constraint(equalToConstant: 56)
         ])
     }
+
     private func setupDate() {
         view.addSubview(dateTextfield)
         dateTextfield.translatesAutoresizingMaskIntoConstraints = false
@@ -230,20 +230,35 @@ class MoreVc: UIViewController {
         ])
     }
 
-    
     @objc func dateChange(_ sender: UIDatePicker) {
         let birthDate = sender.date
-        let calendar = Calendar.current
-        let ageComponents = calendar.dateComponents([.year], from: birthDate, to: Date())
-        _ = ageComponents.year ?? 0
+        selectedBirthDate = birthDate
         dateTextfield.text = formatDate(date: birthDate)
+        updateButtonState()
     }
 
+    @objc private func dateTextChangedManually() {
+        // თუ მომხმარებელმა manual-ად ჩაწერა, ვცდილობთ დავპარსოთ
+        if let text = dateTextfield.text, let parsed = parseDate(from: text) {
+            selectedBirthDate = parsed
+        } else {
+            selectedBirthDate = nil
+        }
+        updateButtonState()
+    }
 
     func formatDate(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         return formatter.string(from: date)
+    }
+
+    func parseDate(from string: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.date(from: string)
     }
 
     private func addToolbar() {
@@ -277,11 +292,68 @@ class MoreVc: UIViewController {
     }
 
     private func updateButtonState() {
-        let enabled = !(nameTextfield.text?.isEmpty ?? true) &&
-                      !(lastTextfield.text?.isEmpty ?? true)
+        let hasFirst = !(nameTextfield.text?.isEmpty ?? true)
+        let hasLast = !(lastTextfield.text?.isEmpty ?? true)
+        let hasDOB = selectedBirthDate != nil || !(dateTextfield.text?.isEmpty ?? true)
+        let enabled = hasFirst && hasLast && hasDOB
 
         getStartedButton.isEnabled = enabled
         getStartedButton.backgroundColor = enabled ? .black : .systemGray4
+    }
+
+    @objc private func saveProfile() {
+        let first = nameTextfield.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let last = lastTextfield.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        var birthDate: Date?
+        let email = UserDefaults.standard.string(forKey: "email") ?? ""
+        if let selected = selectedBirthDate {
+            birthDate = selected
+        } else if let text = dateTextfield.text, let parsed = parseDate(from: text) {
+            birthDate = parsed
+        }
+
+        guard !first.isEmpty else {
+            AlertManager.showInvalidUsernameAlert(on: self)
+            return
+        }
+        guard !last.isEmpty else {
+            AlertManager.showBasicAlert(on: self, title: "Invalid Last Name", message: "Please enter your last name.")
+            return
+        }
+        guard let dob = birthDate else {
+            AlertManager.showBasicAlert(on: self, title: "Invalid Date of Birth", message: "Please select your birth date.")
+            return
+        }
+
+      
+         let years = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+         if years < 13 {
+             print("patara asakisaa")
+             
+         }
+        //დლოგინებული უნდა იყო ჩატ ჯიპის გავაკეთებინე ეს ფრაზა
+        guard Auth.auth().currentUser != nil else {
+            AlertManager.showBasicAlert(on: self, title: "Not Authenticated", message: "Please sign in again.")
+            return
+        }
+
+        AuthService.shared.updateUserProfile(email: email, username: first, lastName: last, birthDate: dob) { [weak self] success, error in
+            guard let self = self else { return }
+
+            if let error = error {
+                AlertManager.showRegistrationErrorAlert(on: self, with: error)
+                return
+            }
+            if success {
+                 let vc = LoadingVc()
+                self.navigationController?.pushViewController(vc, animated: true)
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true, completion: nil)
+                }
+            } else {
+                AlertManager.showRegistrationErrorAlert(on: self)
+            }
+        }
     }
 }
 #warning("loading screen gaqvs gasaketebili romelic loadings moaxdens da gadava onboard screenze figmaze gadaamowme fetchavs datas")

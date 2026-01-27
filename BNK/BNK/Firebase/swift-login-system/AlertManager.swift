@@ -8,7 +8,8 @@ import UIKit
 
 class AlertManager {
     
-    private static func showBasicAlert(on vc: UIViewController, title: String, message: String?) {
+    // გახსნილი, რომ სხვა ფაილებშიც გამოიძახო
+    static func showBasicAlert(on vc: UIViewController, title: String, message: String?) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
@@ -30,6 +31,15 @@ extension AlertManager {
     
     public static func showInvalidUsernameAlert(on vc: UIViewController) {
         self.showBasicAlert(on: vc, title: "Invalid Username", message: "Please enter a valid username.")
+    }
+    
+    // დამატებითი ჰელპერები MoreVc-სთვის
+    public static func showInvalidLastNameAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Invalid Last Name", message: "Please enter your last name.")
+    }
+    
+    public static func showInvalidDOBAlert(on vc: UIViewController) {
+        self.showBasicAlert(on: vc, title: "Invalid Date of Birth", message: "Please select a valid birth date.")
     }
 }
 
@@ -93,3 +103,7 @@ extension AlertManager {
         self.showBasicAlert(on: vc, title: "Unknown Error Fetching User", message: nil)
     }
 }
+
+
+
+#warning("დაამატე პასვორდის ერრორი და როდესაც იმაილს და პასვორდ ჩაწერს უზერი და არასწორი არავალიდური პაროლია არ შეიყვანო და ალერტი გამოაჩვენოს")

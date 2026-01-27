@@ -19,7 +19,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
+
         goToController(with: OnboardingVC())
+
+
     }
 
 
@@ -29,7 +32,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             goToController(with: OnboardingVC())
         } else {
             print("User IS logged in")
-            goToController(with: MobileNumberVC())
+            goToController(with: LoadingVc())
         }
     }
     func goToMain() {
