@@ -146,7 +146,7 @@ import FirebaseAuth
              DispatchQueue.main.async {
                  if success {
                      print("✅ Logged in")
-                     let vc = MoreVc()
+                     let vc = SecureVC()
                      self.navigationController?.pushViewController(vc, animated: true)
                  } else {
                      print("❌ Wrong code or verificationID missing")
@@ -194,4 +194,3 @@ extension OTPVC: UITextFieldDelegate {
         return textField.text?.isEmpty ?? true
     }
 }
-

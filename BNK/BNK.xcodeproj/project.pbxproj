@@ -59,6 +59,7 @@
 		7D1E19472F25867C0031BD86 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7D1E19462F25867C0031BD86 /* FirebaseAnalyticsCore */; };
 		7D1E19492F2586820031BD86 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 7D1E19482F2586820031BD86 /* FirebaseAnalyticsIdentitySupport */; };
 		7D61EEF32F0FC6F600CF972A /* CountryPickerView in Frameworks */ = {isa = PBXBuildFile; productRef = 7D61EEF22F0FC6F600CF972A /* CountryPickerView */; };
+		7D68F0342F29185E00F7ACE7 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 7D68F0332F29185E00F7ACE7 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -142,6 +143,7 @@
 				7D1E17F72F23AC6E0031BD86 /* FirebaseCrashlytics in Frameworks */,
 				7D1E18052F23AC6E0031BD86 /* FirebaseInstallations in Frameworks */,
 				7D026CA02F199D5D0098BAFC /* FirebaseAuthCombine-Community in Frameworks */,
+				7D68F0342F29185E00F7ACE7 /* KeychainAccess in Frameworks */,
 				7D1E19452F2586760031BD86 /* FirebaseAnalytics in Frameworks */,
 				7D026CA82F199D5D0098BAFC /* FirebaseFirestore in Frameworks */,
 			);
@@ -225,6 +227,7 @@
 			packageReferences = (
 				7D61EEF12F0FC6F600CF972A /* XCRemoteSwiftPackageReference "CountryPickerView" */,
 				7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				7D68F0322F29185E00F7ACE7 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7DCA76632F0F0D3C00898481 /* Products */;
@@ -263,6 +266,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = BNK/BNK.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3P9994X9QZ;
@@ -270,6 +274,7 @@
 				INFOPLIST_FILE = BNK/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "იდენტიფიკაციის გასასვლელად";
+				INFOPLIST_KEY_NSFinancialDataUsageDescription = "";
 				INFOPLIST_KEY_NSIdentityUsageDescription = "";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ფოტოს დამატება პროფაილზე";
@@ -285,6 +290,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "swift-dev.BNK";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -300,6 +306,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = BNK/BNK.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3P9994X9QZ;
@@ -307,6 +314,7 @@
 				INFOPLIST_FILE = BNK/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "იდენტიფიკაციის გასასვლელად";
+				INFOPLIST_KEY_NSFinancialDataUsageDescription = "";
 				INFOPLIST_KEY_NSIdentityUsageDescription = "";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ფოტოს დამატება პროფაილზე";
@@ -322,6 +330,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "swift-dev.BNK";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -490,6 +499,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.3.0;
+			};
+		};
+		7D68F0322F29185E00F7ACE7 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -754,6 +771,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7D61EEF12F0FC6F600CF972A /* XCRemoteSwiftPackageReference "CountryPickerView" */;
 			productName = CountryPickerView;
+		};
+		7D68F0332F29185E00F7ACE7 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D68F0322F29185E00F7ACE7 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

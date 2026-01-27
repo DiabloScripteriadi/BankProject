@@ -1,16 +1,8 @@
-//
-//  MobileNumberVC.swift
-//  BNK(Bog)
-//
-//  Created by chasemedkcorto on 08.01.26.
-//
-
 import UIKit
 import CountryPickerView
 import FirebaseAuth
+
 final class MobileNumberVC: UIViewController {
-
-
 
     private let stepLabel = UILabel()
     private let divider = UIView()
@@ -24,6 +16,7 @@ final class MobileNumberVC: UIViewController {
     private let getStartedButton = UIButton(type: .system)
 
     private let countryPickerView = CountryPickerView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -34,7 +27,16 @@ final class MobileNumberVC: UIViewController {
         setupNumberField()
         setupGetStartedButton()
         setupCountryPicker()
+        setupKeyboardToolbar()
+        setupTapToDismiss()
     }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // როცა გვერდიდან გადიხარ, დარწმუნდი რომ კლავიატურა დაიხუროს
+        view.endEditing(true)
+    }
+
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
         stepLabel.text = "Step 2/5"
@@ -149,11 +151,33 @@ final class MobileNumberVC: UIViewController {
     
     private func setupCountryPicker() {
         countryPickerView.delegate = self
-        
     }
+// gamoviyenet chatgpt dros ar davkargavdi
+    private func setupKeyboardToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.items = [flex, done]
+        numberTextField.inputAccessoryView = toolbar
+    }
+
+    private func setupTapToDismiss() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc private func doneTapped() {
+        view.endEditing(true)
+    }
+
+    @objc private func handleBackgroundTap() {
+        view.endEditing(true)
+    }
+
     @objc private func getStartedTapped() {
         guard let rawNumber = numberTextField.text, !rawNumber.isEmpty else { return }
- 
         let countryCode = countryCodeButton.title(for: .normal) ?? "+995"
 
         let cleanNumber = rawNumber
@@ -164,22 +188,23 @@ final class MobileNumberVC: UIViewController {
 
         print("📱 Trying phone number:", phoneNumber)
 
+        
+        getStartedButton.isEnabled = false
+
         AuthService.shared.startAuth(phoneNumber: phoneNumber) { [weak self] success in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 if success {
-                    print("✅ Verification ID generated!")
+                    print(" Verification ID generated!")
                     let vc = OTPVC()
                     self.navigationController!.pushViewController(vc, animated: true)
-                   
                 } else {
-                    print("❌ Failed to generate verification ID")
+                    print(" Failed to generate verification ID")
                     self.getStartedButton.isEnabled = true
                 }
             }
         }
     }
-
 
     @objc private func openCountryPicker() {
         countryPickerView.showCountriesList(from: self)
@@ -210,39 +235,10 @@ final class MobileNumberVC: UIViewController {
     }
 }
 
-
-
 extension MobileNumberVC: CountryPickerViewDelegate {
     func countryPickerView(_ countryPickerView: CountryPickerView, didSelectCountry country: Country) {
         countryCodeButton.setTitle("\(country.phoneCode)", for: .normal)
     }
 }
-
-
-
-//extension MobileNumberVC: UITextFieldDelegate {
-//
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        textField.resignFirstResponder()
-//
-//        guard let text = textField.text, !text.isEmpty else {
-//            return false
-//        }
-//
-//        let phoneNumber = "+995" + text   // თუ ნომერს 5-ით იწყებ
-//
-//        AuthService.shared.startAuth(phoneNumber: phoneNumber) { [weak self] success in
-//            guard success else {
-//                print("❌ Failed to send SMS")
-//                return
-//            }
-//
-//            DispatchQueue.main.async {
-//                let vc = OTPVC()
-//                self?.navigationController?.pushViewController(vc, animated: true)
-//            }
-//        }
-//
-//        return true
-//    }
-//}
+#warning("gassasworebelia rodesac user wers textfieldshi chans tetrad textcolor shesacvlelia")
+#warning("labels color shesacvlelia yvelgannn ")

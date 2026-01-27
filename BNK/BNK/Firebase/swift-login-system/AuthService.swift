@@ -9,91 +9,115 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class AuthService {
-
+    
     static let shared = AuthService()
     private init() {}
-    private var verificationId: String?
+    
     private let auth = Auth.auth()
-
-    //  - Email Register
-    func registerUser(with userRequest: RegisterUserRequest, completion: @escaping (Bool, Error?) -> Void) {
-        auth.createUser(withEmail: userRequest.email, password: userRequest.password) { result, error in
+    private let db = Firestore.firestore()
+    private var verificationId: String?
+    private var currentPhoneNumber: String?
+    
+    // Email Register
+    func registerUser(with userRequest: RegisterUserRequest,completion: @escaping (Bool, Error?) -> Void) {
+        auth.createUser(withEmail: userRequest.email, password: userRequest.password) { [weak self] result, error in
             if let error = error {
                 completion(false, error)
                 return
             }
+            
             guard let user = result?.user else {
                 completion(false, nil)
                 return
             }
-
-            Firestore.firestore().collection("users")
+            
+            let data: [String: Any] = [
+                "username": userRequest.username,
+                "email": user.email ?? "",
+                "phone": user.phoneNumber ?? ""
+            ]
+            
+            self?.db.collection("users")
                 .document(user.uid)
-                .setData([
-                    "username": userRequest.username,
-                    "email": userRequest.email
-                ]) { error in
+                .setData(data, merge: true) { error in
                     completion(error == nil, error)
                 }
         }
     }
-
-    //Phone Auth: Start verification
+    
+    // Phone Auth (Start)
     func startAuth(phoneNumber: String, completion: @escaping (Bool) -> Void) {
-        // Disable App Check / reCAPTCHA for simulator testing
         Auth.auth().settings?.isAppVerificationDisabledForTesting = true
-
-        PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { [weak self] verificationID, error in
-            if let error = error {
-                print("❌ startAuth error:", error.localizedDescription)
-                completion(false)
-                return
+        
+        PhoneAuthProvider.provider()
+            .verifyPhoneNumber(phoneNumber, uiDelegate: nil) { [weak self] verificationID, error in
+                // Save the exact number user entered
+                self?.currentPhoneNumber = phoneNumber
+                
+                if let error = error {
+                    print("❌ startAuth error:", error.localizedDescription)
+                    completion(false)
+                    return
+                }
+                
+                guard let verificationID = verificationID else {
+                    completion(false)
+                    return
+                }
+                
+                self?.verificationId = verificationID
+                completion(true)
             }
-
-            guard let verificationID = verificationID else {
-                print("❌ No verificationID returned")
-                completion(false)
-                return
-            }
-
-            self?.verificationId = verificationID
-            print("✅ verificationID received:", verificationID)
-            completion(true)
-        }
     }
-
-    //Phone Auth: Verify code
+    
+    // Phone Auth (Verify Code)
     func verifyCode(smsCode: String, completion: @escaping (Bool) -> Void) {
         guard let verificationId = verificationId else {
-            print("❌ verificationID is nil, call startAuth first")
             completion(false)
             return
         }
-
-        let credential = PhoneAuthProvider.provider().credential(
-            withVerificationID: verificationId,
-            verificationCode: smsCode
-        )
-
-        Auth.auth().signIn(with: credential) { authResult, error in
+        
+        let credential = PhoneAuthProvider.provider()
+            .credential(withVerificationID: verificationId, verificationCode: smsCode)
+        
+        auth.signIn(with: credential) { [weak self] result, error in
             if let error = error {
                 print("❌ verifyCode error:", error.localizedDescription)
                 completion(false)
                 return
             }
-
-            print("✅ User signed in:", authResult?.user.uid ?? "")
-            completion(true)
+            
+            guard let self = self, let user = result?.user else {
+                completion(false)
+                return
+            }
+            
+            // Save the phone number the user actually entered
+            let data: [String: Any] = [
+                "phone": self.currentPhoneNumber ?? "",
+                "email": user.email ?? ""
+            ]
+            
+            self.db.collection("users")
+                .document(user.uid)
+                .setData(data, merge: true) { error in
+                    if let error = error {
+                        print("❌ Firestore save error:", error.localizedDescription)
+                        completion(false)
+                    } else {
+                        completion(true)
+                    }
+                }
         }
     }
-
+    
     // Email Sign In
     func signIn(with userRequest: LoginUSerRequest, completion: @escaping (Error?) -> Void) {
         auth.signIn(withEmail: userRequest.email, password: userRequest.password) { _, error in
             completion(error)
         }
     }
-
+    
     // Sign Out
     func signOut(completion: @escaping (Error?) -> Void) {
         do {
