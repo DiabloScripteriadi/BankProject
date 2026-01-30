@@ -181,9 +181,7 @@ import FirebaseAuth
 
 
 extension OTPVC: UITextFieldDelegate {
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField,shouldChangeCharactersIn range: NSRange,replacementString string: String) -> Bool {
         
         if string.isEmpty {textField.text = ""
             let prevTag = textField.tag - 1
