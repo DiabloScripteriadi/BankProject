@@ -255,3 +255,4 @@ class SecureVC: UIViewController {
          navigationController?.pushViewController(vc, animated: true)
     }
 }
+#warning("დავამატოთ ლოგინში როდესაც შეხვას დასეივებული პასკოდი მერე არ გაგიჭირდეება და ფეის აიდს გამოიყენებ შესავლელად ამაში კიჩეინი დაგვეხმარება")

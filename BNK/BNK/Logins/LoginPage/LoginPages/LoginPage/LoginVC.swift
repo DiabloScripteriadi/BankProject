@@ -234,7 +234,7 @@ class loginVC: UIViewController {
                 AlertManager.showSignInErrorAlert(on: self, with: error)
                 return
             }
-            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+            if self.view.window?.windowScene?.delegate is SceneDelegate {
                 let vc  = LoginPasscodeVC()
                 self.navigationController!.pushViewController(vc, animated: true)
             }

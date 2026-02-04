@@ -13,7 +13,7 @@ class AuthService {
     static let shared = AuthService()
     private init() {}
     
-    private let auth = Auth.auth()
+    public let auth = Auth.auth()
     private let db = Firestore.firestore()
     private var verificationId: String?
     private var currentPhoneNumber: String?

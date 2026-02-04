@@ -25,7 +25,7 @@ class EmailLoadingVc: UIViewController {
         //rodesac daamtavrebs loading screens gadva onboard screenze 
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(8)) {
             print("Task executed on the main queue at: \(Date())")
-            let vc = OnboardingVC()
+            let vc = MainVC()
             self.navigationController!.pushViewController(vc, animated: true)
         }
         view.addSubview(spinner)
