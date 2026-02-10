@@ -6,10 +6,22 @@
 //
 
 import UIKit
+import SwiftUI
 
 class ProfileVC: UIViewController {
 
-    // Container button (tappable row)
+    
+    private lazy var tableView: UITableView = {
+        let tb = UITableView()
+        tb.dataSource = self
+        tb.delegate = self
+        tb.translatesAutoresizingMaskIntoConstraints = false
+        tb.estimatedRowHeight = 0
+        tb.backgroundColor = .systemBackground
+        tb.register(AuthorizationCell.self, forCellReuseIdentifier: "AuthorizationCell")
+        return tb
+    }()
+
     private let profileBtn: UIButton = {
         let btn = UIButton(type: .system)
         btn.translatesAutoresizingMaskIntoConstraints = false
@@ -18,11 +30,9 @@ class ProfileVC: UIViewController {
         btn.layer.borderWidth = 1
         btn.layer.borderColor = UIColor.darkGray.cgColor
         btn.clipsToBounds = true
-        // Keep default highlight feedback
         return btn
     }()
 
-    // Left icon
     private let avatarImageView: UIImageView = {
         let iv = UIImageView(image: UIImage(systemName: "person.circle"))
         iv.translatesAutoresizingMaskIntoConstraints = false
@@ -32,7 +42,6 @@ class ProfileVC: UIViewController {
         return iv
     }()
 
-    // Middle title
     private let nameLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
@@ -42,6 +51,7 @@ class ProfileVC: UIViewController {
         lbl.lineBreakMode = .byTruncatingMiddle
         return lbl
     }()
+
     private let chevronView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
@@ -56,6 +66,10 @@ class ProfileVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
+
+        // Add table below the profile button
+        view.addSubview(tableView)
+        setupTableView()
 
         profileBtn.addTarget(self, action: #selector(didTapProfile), for: .touchUpInside)
     }
@@ -75,13 +89,11 @@ class ProfileVC: UIViewController {
         profileBtn.addSubview(chevronView)
 
         NSLayoutConstraint.activate([
-         
             avatarImageView.leadingAnchor.constraint(equalTo: profileBtn.leadingAnchor, constant: 16),
             avatarImageView.centerYAnchor.constraint(equalTo: profileBtn.centerYAnchor),
             avatarImageView.widthAnchor.constraint(equalToConstant: 32),
             avatarImageView.heightAnchor.constraint(equalToConstant: 32),
 
-         
             chevronView.trailingAnchor.constraint(equalTo: profileBtn.trailingAnchor, constant: -16),
             chevronView.centerYAnchor.constraint(equalTo: profileBtn.centerYAnchor),
             chevronView.widthAnchor.constraint(equalToConstant: 12),
@@ -93,12 +105,32 @@ class ProfileVC: UIViewController {
         ])
     }
 
+    private func setupTableView() {
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: profileBtn.bottomAnchor, constant: 12),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
     @objc private func didTapProfile() {
         print("Profile row tapped")
     }
 }
 
-import SwiftUI
+extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        6
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // Use the same identifier you registered
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as! SettingsCell
+        return cell
+    }
+}
+
 #Preview {
     UINavigationController(rootViewController: ProfileVC())
 }
