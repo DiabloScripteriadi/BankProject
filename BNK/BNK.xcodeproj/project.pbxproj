@@ -269,6 +269,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BNK/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Its Use Of Contacts";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "იდენტიფიკაციის გასასვლელად";
 				INFOPLIST_KEY_NSIdentityUsageDescription = "";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
@@ -306,6 +307,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BNK/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Its Use Of Contacts";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "იდენტიფიკაციის გასასვლელად";
 				INFOPLIST_KEY_NSIdentityUsageDescription = "";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";

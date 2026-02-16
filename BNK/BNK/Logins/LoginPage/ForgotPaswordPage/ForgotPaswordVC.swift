@@ -6,11 +6,11 @@
 //
 
 import UIKit
-import UIKit
+import FirebaseAuth
+import SwiftUI
 
 final class ForgotPaswordVC: UIViewController {
  
-
     private let stepLabel = UILabel()
     private let divider = UIView()
     private let titleLabel = UILabel()
@@ -21,9 +21,6 @@ final class ForgotPaswordVC: UIViewController {
     private let emailTextField = UITextField()
     private let emailFloatingLabel = UILabel()
     
-
-    
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -33,15 +30,9 @@ final class ForgotPaswordVC: UIViewController {
         setupTitleLabel()
         setupEmailField()
         setupGetStartedButton()
+        setupKeyboardToolbar()
+        setupTapToDismiss()
     }
-//    private func checkBox() {
-//        let checkbox = CircularCheckbox(frame: CGRect(x: 70, y: 200, width: 70, height: 70))
-//        label.text = "sss"
-//        view.addSubview(checkbox)
-//        view.addSubview(label)
-//        let label1 = UILabel(frame: CGRect(x: 150, y: 200, width: 200, height: 70))
-//    }
-    
 
     private func setupStepLabel() {
         stepLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -64,7 +55,7 @@ final class ForgotPaswordVC: UIViewController {
         NSLayoutConstraint.activate([
             divider.topAnchor.constraint(equalTo: stepLabel.bottomAnchor, constant: 8),
             divider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6   ),
+            divider.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6),
             divider.heightAnchor.constraint(equalToConstant: 5)
         ])
     }
@@ -88,13 +79,11 @@ final class ForgotPaswordVC: UIViewController {
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
             subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor)
         ])
     }
-
 
     private func setupEmailField() {
         emailContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -111,7 +100,7 @@ final class ForgotPaswordVC: UIViewController {
         ])
 
         emailFloatingLabel.translatesAutoresizingMaskIntoConstraints = false
-        emailFloatingLabel.text = "Email Addresss"
+        emailFloatingLabel.text = "Email Address"
         emailFloatingLabel.font = .systemFont(ofSize: 14)
         emailFloatingLabel.textColor = .gray
         emailContainer.addSubview(emailFloatingLabel)
@@ -119,6 +108,7 @@ final class ForgotPaswordVC: UIViewController {
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         emailTextField.keyboardType = .emailAddress
         emailTextField.autocapitalizationType = .none
+        emailTextField.textContentType = .emailAddress
         emailTextField.addTarget(self, action: #selector(emailChanged), for: .editingChanged)
         emailContainer.addSubview(emailTextField)
 
@@ -132,6 +122,7 @@ final class ForgotPaswordVC: UIViewController {
             emailTextField.bottomAnchor.constraint(equalTo: emailContainer.bottomAnchor, constant: -8)
         ])
     }
+
     private func setupGetStartedButton() {
         getStartedButton.translatesAutoresizingMaskIntoConstraints = false
         getStartedButton.setTitle("Next", for: .normal)
@@ -140,6 +131,7 @@ final class ForgotPaswordVC: UIViewController {
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 15
         getStartedButton.isEnabled = false
+        getStartedButton.addTarget(self, action: #selector(forgotPasworedTapped), for: .touchUpInside)
         view.addSubview(getStartedButton)
 
         NSLayoutConstraint.activate([
@@ -150,11 +142,54 @@ final class ForgotPaswordVC: UIViewController {
         ])
     }
 
+    private func setupKeyboardToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.items = [flex, done]
+        emailTextField.inputAccessoryView = toolbar
+    }
 
+    private func setupTapToDismiss() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc private func doneTapped() {
+        view.endEditing(true)
+    }
+
+    @objc private func handleBackgroundTap() {
+        view.endEditing(true)
+    }
+
+    @objc private func forgotPasworedTapped() {
+        let email = emailTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        // Optional but recommended: basic email validation
+        guard Validator.isValidEmail(email) else {
+            AlertManager.showInvalidEmailAlert(on: self)
+            return
+        }
+
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                AlertManager.showErrorSendingPasswordReset(on: self, with: error)
+                let vc = OnboardingVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else {
+                AlertManager.showPasswordResetSent(on: self)
+            }
+        }
+    }
+#warning("სპამში გამოიგზავნება ჯიმაილის პაროლი და იქ შეგიძლია შეცვალო")
     @objc private func emailChanged() {
         animate(label: emailFloatingLabel, hasText: !(emailTextField.text?.isEmpty ?? true))
         updateButtonState()
     }
+
     private func animate(label: UILabel, hasText: Bool) {
         UIView.animate(withDuration: 0.25) {
             label.transform = hasText
@@ -164,14 +199,16 @@ final class ForgotPaswordVC: UIViewController {
     }
 
     private func updateButtonState() {
-        let enabled = !(emailTextField.text?.isEmpty ?? true)
-
-
+        let text = emailTextField.text ?? ""
+        let enabled = !text.isEmpty
         UIView.animate(withDuration: 0.25) {
             self.getStartedButton.isEnabled = enabled
             self.getStartedButton.backgroundColor = enabled ? .black : .systemGray4
         }
     }
-    }
-#warning("roca daresetdeba notifiation alerti amovides")
-#warning("paswordze ro darestdeba emaili gaigzavnos da firebaseshi sheicvalos paroli")
+}
+//#Preview {
+//    let vc = ForgotPaswordVC()
+//    UINavigationController(rootViewController: vc)
+//}
+#warning("rodesac gadava backbuttoni mosacilebeli titqmis yvelgan")

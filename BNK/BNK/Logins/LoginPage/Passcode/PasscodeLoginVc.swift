@@ -297,3 +297,5 @@ class LoginPasscodeVC: UIViewController {
     }
 }
 #warning("დასამატებელია account info აუცილებლად დრო არ დავკარგავთ მაგაზე ")
+#warning("დასამატებელია account info აუცილებლად დრო არ დავკარგავთ მაგაზე ")
+#warning("დასამატებელია account info აუცილებლად დრო არ დავკარგავთ მაგაზე ")

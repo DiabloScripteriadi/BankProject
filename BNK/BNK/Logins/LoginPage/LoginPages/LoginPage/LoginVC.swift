@@ -59,6 +59,7 @@ class loginVC: UIViewController {
         forgotPasswordButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
         forgotPasswordButton.contentHorizontalAlignment = .right
         view.addSubview(forgotPasswordButton)
+        forgotPasswordButton.addTarget(self, action: #selector(didTapForgotPassword), for: .touchUpInside)
         NSLayoutConstraint.activate([
             forgotPasswordButton.topAnchor.constraint(equalTo: passwordContainer.bottomAnchor, constant: 8),
             forgotPasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
