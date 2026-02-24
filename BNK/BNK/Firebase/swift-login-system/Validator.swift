@@ -21,8 +21,7 @@ final class Validator {
 
     static func isValidPassword(_ password: String) -> Bool {
         let password = password.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // Minimum 6 chars, max 24, at least one letter and one number
+         //მინიმუმი 6 მაქსიმუმი 24
         let passwordRegex =
         #"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,24}$"#
 
@@ -34,7 +33,6 @@ final class Validator {
     static func isValidUsername(_ username: String) -> Bool {
         let username = username.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Letters, numbers, underscore, 4–20 chars
         let usernameRegex =
         #"^[A-Za-z0-9_]{4,20}$"#
 

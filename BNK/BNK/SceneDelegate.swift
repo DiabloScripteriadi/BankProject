@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
 
-        goToController(with: DPTVC())
+        goToController(with: OnboardingVC())
 
 
     }

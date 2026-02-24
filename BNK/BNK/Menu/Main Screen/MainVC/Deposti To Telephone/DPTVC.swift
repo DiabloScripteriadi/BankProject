@@ -48,8 +48,6 @@ class DPTVC: UIViewController {
         br.placeholder = "Who Are You Looking For?"
         br.searchBarStyle = .minimal
         br.translatesAutoresizingMaskIntoConstraints = false
-
-        
         return br
     }()
     
@@ -89,15 +87,17 @@ class DPTVC: UIViewController {
     private var contacts = [ContactsStruct]()
     private let stackView = UIStackView()
     private var otpFields: [UITextField] = []
-    
+    private let getStartedButton = UIButton(type: .system)
     private var tableViewHeightConstraint: NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
+        searchBar.delegate = self
         setupOTPFields()
         requestContactsAccessAndFetch()
+        setupGetStartedButton()
     }
     
     override func viewDidLayoutSubviews() {
@@ -121,8 +121,8 @@ class DPTVC: UIViewController {
         
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             stackView.heightAnchor.constraint(equalToConstant: 56)
         ])
         
@@ -147,9 +147,10 @@ class DPTVC: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(titleLabel)
-        contentView.addSubview(searchBar)
-        contentView.addSubview(contactLabel)
+        contentView.addSubview(stackView)
         contentView.addSubview(mobileBtn)
+        contentView.addSubview(contactLabel)
+        contentView.addSubview(searchBar)
         contentView.addSubview(contactsTableView)
         
         NSLayoutConstraint.activate([
@@ -169,24 +170,29 @@ class DPTVC: UIViewController {
 
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 20),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -20),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
         
+        
         NSLayoutConstraint.activate([
-            mobileBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mobileBtn.bottomAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+            mobileBtn.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            mobileBtn.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 16),
             mobileBtn.heightAnchor.constraint(equalToConstant: 40),
+            mobileBtn.widthAnchor.constraint(greaterThanOrEqualToConstant: 140)
         ])
         
         NSLayoutConstraint.activate([
-            contactLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            contactLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             contactLabel.topAnchor.constraint(equalTo: mobileBtn.bottomAnchor, constant: 20),
-            
+            contactLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16)
+        ])
+        
+        NSLayoutConstraint.activate([
             searchBar.topAnchor.constraint(equalTo: contactLabel.bottomAnchor, constant: 16),
-            searchBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            searchBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            searchBar.heightAnchor.constraint(equalToConstant: 44),
+            searchBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            searchBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            searchBar.heightAnchor.constraint(equalToConstant: 44)
         ])
         
         tableViewHeightConstraint = contactsTableView.heightAnchor.constraint(equalToConstant: 80)
@@ -194,12 +200,51 @@ class DPTVC: UIViewController {
         
         NSLayoutConstraint.activate([
             contactsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 12),
-            contactsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            contactsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            contactsTableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            contactsTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
             contactsTableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
     }
     
+    private func setupGetStartedButton() {
+        getStartedButton.translatesAutoresizingMaskIntoConstraints = false
+        getStartedButton.setTitle("Get Started", for: .normal)
+        getStartedButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        getStartedButton.setTitleColor(.white, for: .normal)
+        getStartedButton.backgroundColor = .systemGray4
+        getStartedButton.layer.cornerRadius = 14
+        getStartedButton.isEnabled = false
+        getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
+        view.addSubview(getStartedButton)
+
+        NSLayoutConstraint.activate([
+            getStartedButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            getStartedButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
+            getStartedButton.widthAnchor.constraint(equalToConstant: 300),
+            getStartedButton.heightAnchor.constraint(equalToConstant: 60)
+        ])
+    }
+    
+    @objc private func getStartedTapped() {
+        getStartedButton.isEnabled = false
+        getStartedButton.backgroundColor = .systemGray4
+
+        getStartedButton.isEnabled = false
+
+        if getStartedButton.isSelected {
+            print("sss")
+        } else {
+            print("success")
+            self.getStartedButton.isEnabled = true
+            self.getStartedButton.backgroundColor = .black
+        }
+    }
+    private func updateButtonState() {
+        let enabled = otpFields.count == 6 && otpFields.allSatisfy({$0.text?.isEmpty == true || $0.text?.count == 1})
+
+        getStartedButton.isEnabled = enabled
+        getStartedButton.backgroundColor = enabled ? .black : .systemGray4
+    }
     @objc private func textDidChange(_ textField: UITextField) {
         if let text = textField.text, text.count == 1 {
             let nextTag = textField.tag + 1
@@ -243,7 +288,7 @@ class DPTVC: UIViewController {
                 let model = ContactsStruct(
                     givenName: contact.givenName,
                     familyName: contact.familyName,
-                    number: firstNumber,
+                    number: firstNumber
                 )
                 fetched.append(model)
             }
@@ -271,21 +316,14 @@ extension DPTVC: UITextFieldDelegate {
         return textField.text?.isEmpty ?? true
     }
 }
-extension DPTVC: UISearchBarDelegate, UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        let searchBar = searchController.searchBar
-        let scopeButton = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
-        let searchText = searchBar.text
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-       
-    }
+
+extension DPTVC: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-        
     }
 }
+
 extension DPTVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         contacts.count
@@ -309,7 +347,6 @@ extension DPTVC: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension DPTVC: CNContactPickerDelegate { }
-
 #warning("gasaketebelia cellshi davaregulitor Miranda da numberLabel")
-
+#warning("get startedf button rodesac chavwert textfieldshi chavwert button appeardeba da transaction completedeba")
+#warning("title label centrshi da tcota gavzardot gavmamuqot")

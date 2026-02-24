@@ -30,7 +30,7 @@ class ContactsCell: UITableViewCell {
     private let contactNameLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.text = "Miranda"
+        lbl.text = ""
         lbl.font = .systemFont(ofSize: 14, weight: .medium)
         lbl.textColor = .black
         lbl.numberOfLines = 1
@@ -39,7 +39,7 @@ class ContactsCell: UITableViewCell {
     private let contactNumberLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.text = "1232424"
+        lbl.text = ""
         lbl.font = .systemFont(ofSize: 13, weight: .medium)
         lbl.textColor = .gray
         lbl.numberOfLines = 1

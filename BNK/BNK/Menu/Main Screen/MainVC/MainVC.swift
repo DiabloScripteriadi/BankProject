@@ -536,7 +536,7 @@ class MainVC: UIViewController {
             todayTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             todayTableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
-
+        mobileButton.addTarget(self, action: #selector(didTapDepTelephone), for: .touchUpInside)
         profileBtn.addTarget(self, action: #selector(didTapProfile), for: .touchUpInside)
         profileBtn.addTarget(self, action: #selector(populateUserInfo), for: .valueChanged)
         mobileButton.addTarget(self, action: #selector(didTapMobileDeposit), for: .touchUpInside)
@@ -564,7 +564,10 @@ class MainVC: UIViewController {
         let vc = ProfileVC()
         navigationController?.pushViewController(vc, animated: true)
     }
-    
+    @objc private func didTapDepTelephone() {
+        let vc = DPTVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
     @objc private func didTapMobileDeposit() {}
     @objc private func didTapTransferMoney() {}
     @objc private func didTapPiggyBank() {
@@ -611,19 +614,15 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource {
         return 80
     }
 }
-//import SwiftUI
-//#Preview {
-//    UINavigationController(rootViewController: MainVC())
-//}
-#warning("transfer money da claim moneys labelebi gasasworebelia ")
+import SwiftUI
+#Preview {
+    UINavigationController(rootViewController: MainVC())
+}
+
 #warning("ProfileButtonshi unda sheicvalos saxeli da daeweros saxeli romelitac shevedit")
-#warning("scrolll unda gavaketot")
-#warning("shevcvalot iconebi da tableview scrollebadi ar gavxadot ")
 #warning("Investiciebis webkitebi")
 #warning("cardis webkitebi webkitebi")
 #warning("uiviewbis shecvalos randomizerit")
-#warning("gasasworebelia titqmis yvelaferi")
 #warning("ლოგინს სანამ დაამთავრებ დებითქარდი უნდა დავამატოთ ")
 #warning("gaakete timers daamgvale transationcellshi")
 #warning("mycard vc shi create cardic sheqimnass")
-
