@@ -65,7 +65,27 @@ class AuthService {
                 completion(error == nil, error)
             }
     }
-    
+    //სექმნა ბარათის და შენახვა ფაირბეისშ Create CArd 
+    func createCard(cardNumber:String,cardHolder:String,expireDate:String,cvv:String, completion: @escaping (Bool, Error?)-> Void) {
+        guard let uid = auth.currentUser?.uid else {
+            completion(false, NSError(domain: "AuthService", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
+            return
+        }
+        
+        let data: [String: Any] = [
+            "cardNumber": cardNumber,
+            "cardHolder": cardHolder,
+            "expireDate": expireDate,
+            "cvv": cvv,
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+        
+        db.collection("users")
+            .document(uid)
+            .setData(data, merge: true) { error in
+                completion(error == nil, error)
+            }
+    }
     // Phone Auth (Start)
     func startAuth(phoneNumber: String, completion: @escaping (Bool) -> Void) {
         Auth.auth().settings?.isAppVerificationDisabledForTesting = true

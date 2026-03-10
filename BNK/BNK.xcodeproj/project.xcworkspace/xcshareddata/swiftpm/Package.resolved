@@ -1,5 +1,5 @@
 {
-  "originHash" : "8e275990f1277a8499f790594aca97c07c7be93e9ae4c4c75f23d77355a94e0d",
+  "originHash" : "e2ac899c0e213be4bc5353137685e4107b51977e6ac77b699022e3137d25b087",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "6ecf22145d577411fb97c8c964df0fb5886f035f",
         "version" : "3.3.0"
+      }
+    },
+    {
+      "identity" : "creditcardformatter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/barbarity/CreditCardFormatter.git",
+      "state" : {
+        "revision" : "918bada935459b3543891495b4d3fbd78ba77bc7",
+        "version" : "0.1.0"
       }
     },
     {

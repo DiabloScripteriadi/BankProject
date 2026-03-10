@@ -39,7 +39,7 @@ class KeychainManager: KeychainManagerType {
          
                 kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
             ]
-            let status = SecItemAdd(query as CFDictionary, nil)
+            let status = SecItemUpdate(query as CFDictionary, [:] as CFDictionary)
             return status == errSecSuccess
         }
     }

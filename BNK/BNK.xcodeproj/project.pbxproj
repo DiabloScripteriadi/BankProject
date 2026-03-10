@@ -59,6 +59,7 @@
 		7D1E19472F25867C0031BD86 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7D1E19462F25867C0031BD86 /* FirebaseAnalyticsCore */; };
 		7D1E19492F2586820031BD86 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 7D1E19482F2586820031BD86 /* FirebaseAnalyticsIdentitySupport */; };
 		7D61EEF32F0FC6F600CF972A /* CountryPickerView in Frameworks */ = {isa = PBXBuildFile; productRef = 7D61EEF22F0FC6F600CF972A /* CountryPickerView */; };
+		7D996DD02F588822001883DD /* CreditCardFormatter in Frameworks */ = {isa = PBXBuildFile; productRef = 7D996DCF2F588822001883DD /* CreditCardFormatter */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,6 +107,7 @@
 				7D026CAA2F199D5D0098BAFC /* FirebaseFirestoreCombine-Community in Frameworks */,
 				7D1E17F12F23AC6E0031BD86 /* FirebaseAuth in Frameworks */,
 				7D1E19472F25867C0031BD86 /* FirebaseAnalyticsCore in Frameworks */,
+				7D996DD02F588822001883DD /* CreditCardFormatter in Frameworks */,
 				7D1E17EF2F23AC6E0031BD86 /* FirebaseAppDistribution-Beta in Frameworks */,
 				7D026CA22F199D5D0098BAFC /* FirebaseCore in Frameworks */,
 				7D1E17F52F23AC6E0031BD86 /* FirebaseCore in Frameworks */,
@@ -225,6 +227,7 @@
 			packageReferences = (
 				7D61EEF12F0FC6F600CF972A /* XCRemoteSwiftPackageReference "CountryPickerView" */,
 				7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				7D996DCE2F588822001883DD /* XCRemoteSwiftPackageReference "CreditCardFormatter" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7DCA76632F0F0D3C00898481 /* Products */;
@@ -494,6 +497,14 @@
 				minimumVersion = 3.3.0;
 			};
 		};
+		7D996DCE2F588822001883DD /* XCRemoteSwiftPackageReference "CreditCardFormatter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/barbarity/CreditCardFormatter.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -756,6 +767,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7D61EEF12F0FC6F600CF972A /* XCRemoteSwiftPackageReference "CountryPickerView" */;
 			productName = CountryPickerView;
+		};
+		7D996DCF2F588822001883DD /* CreditCardFormatter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D996DCE2F588822001883DD /* XCRemoteSwiftPackageReference "CreditCardFormatter" */;
+			productName = CreditCardFormatter;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

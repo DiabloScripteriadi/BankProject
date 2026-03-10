@@ -6,15 +6,16 @@
 //
 import UIKit
 import FirebaseAuth
-
-class MainVC: UIViewController {
+import WebKit
+class MainVC: UIViewController, WKUIDelegate {
     
     private let scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.backgroundColor = .systemBackground
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.isScrollEnabled = true
-        sv.showsVerticalScrollIndicator = true
+        sv.showsVerticalScrollIndicator = false
+        sv.showsHorizontalScrollIndicator = false
         return sv
     }()
     
@@ -360,27 +361,60 @@ class MainVC: UIViewController {
     
     private var tableViewHeightConstraint: NSLayoutConstraint?
     
+    public let addCardBtn: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("AddCard", for: .normal)
+        btn.setImage(UIImage(systemName: "plus"), for: .normal)
+        btn.tintColor = .label
+        btn.setTitleColor(.label, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 5, right: 12)
+        btn.backgroundColor = .secondarySystemBackground
+        btn.layer.cornerRadius = 20
+        btn.clipsToBounds = true
+        btn.imageEdgeInsets = UIEdgeInsets(top: -60, left: 45, bottom: 10, right: 4)
+        btn.titleLabel?.lineBreakMode = .byTruncatingMiddle
+        btn.layer.borderWidth = 1
+        btn.layer.borderColor = UIColor.orange.cgColor
+        return btn
+    }()
+    private var injectedCardView: Card?
+    private var webView:WKWebView
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationController?.setNavigationBarHidden(true, animated: false)
-        
         setupUI()
         populateUserInfo()
+        setupAddCard()
     }
-    
+    override func loadView() {
+        let webConfiguration = WKWebViewConfiguration()
+        webView = WKWebView(frame: .zero, configuration: webConfiguration)
+        webView.uiDelegate = self
+        view = webView
+    }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateTableViewHeight()
     }
-    
     private func updateTableViewHeight() {
         todayTableView.layoutIfNeeded()
         let height = todayTableView.contentSize.height
         tableViewHeightConstraint?.constant = height
     }
-    
+    private func setupAddCard() {
+        NSLayoutConstraint.activate([
+            addCardBtn.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 60),
+            addCardBtn.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            addCardBtn.heightAnchor.constraint(equalToConstant: 120),
+            addCardBtn.widthAnchor.constraint(equalToConstant: 350),
+        ])
+    }
     private func setupUI() {
+        contentView.addSubview(addCardBtn)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
@@ -410,7 +444,6 @@ class MainVC: UIViewController {
         contentView.addSubview(claimMoneyTitleLabel)
         contentView.addSubview(myCardButton)
         contentView.addSubview(myCardTitleLabel)
-        contentView.addSubview(cardsCollectionView)
         contentView.addSubview(piggyBankView)
         contentView.addSubview(coinsView)
         contentView.addSubview(quickAccessTitleLabel)
@@ -419,7 +452,9 @@ class MainVC: UIViewController {
         contentView.addSubview(investButton)
         contentView.addSubview(todayLabel)
         contentView.addSubview(todayTableView)
-        
+        contentView.addSubview(cardsCollectionView)
+        contentView.addSubview(addCardBtn)
+
         NSLayoutConstraint.activate([
             profileBtn.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             profileBtn.heightAnchor.constraint(equalToConstant: 40),
@@ -476,7 +511,7 @@ class MainVC: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            cardsCollectionView.topAnchor.constraint(equalTo: myCardTitleLabel.bottomAnchor, constant: 24),
+            cardsCollectionView.topAnchor.constraint(equalTo: addCardBtn.bottomAnchor, constant: 10),
             cardsCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             cardsCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             cardsCollectionView.heightAnchor.constraint(equalToConstant: 205)
@@ -536,6 +571,7 @@ class MainVC: UIViewController {
             todayTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             todayTableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
+        addCardBtn.addTarget(self, action: #selector(didTapAddCard), for: .touchUpInside)
         mobileButton.addTarget(self, action: #selector(didTapDepTelephone), for: .touchUpInside)
         profileBtn.addTarget(self, action: #selector(didTapProfile), for: .touchUpInside)
         profileBtn.addTarget(self, action: #selector(populateUserInfo), for: .valueChanged)
@@ -577,6 +613,7 @@ class MainVC: UIViewController {
     @objc private func didTapCoins() {
         let vc = ProfileVC()
         navigationController?.pushViewController(vc, animated: true)
+        
     }
     @objc private func didTapAirTime() {
         
@@ -587,8 +624,28 @@ class MainVC: UIViewController {
     @objc private func didTapInvest() {
         
     }
-}
+    @objc private func didTapAddCard() {
+        let vc = AddCardVc()
+        vc.delegate = self
+        
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 24
+            sheet.largestUndimmedDetentIdentifier = .large
+        }
 
+        vc.modalPresentationStyle = .overFullScreen
+        present(vc, animated: true)
+    }
+}
+private func webView() {
+    
+    let myURL = URL (string: "https://www.apple.com")
+    let myRequest = URLRequest(url: myURL!)
+  
+}
 extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         5
@@ -614,11 +671,29 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource {
         return 80
     }
 }
+extension MainVC: ButtonDelegate {
+    func didTapButton(with view: Card) {
+        injectedCardView?.removeFromSuperview()
+        injectedCardView = view
+        
+        addCardBtn.isHidden = true
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(view)
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 60),
+            view.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            view.widthAnchor.constraint(equalToConstant: 260),
+        ])
+        
+        
+    }
+}
+
 import SwiftUI
 #Preview {
     UINavigationController(rootViewController: MainVC())
 }
-
 #warning("ProfileButtonshi unda sheicvalos saxeli da daeweros saxeli romelitac shevedit")
 #warning("Investiciebis webkitebi")
 #warning("cardis webkitebi webkitebi")
@@ -626,3 +701,5 @@ import SwiftUI
 #warning("ლოგინს სანამ დაამთავრებ დებითქარდი უნდა დავამატოთ ")
 #warning("gaakete timers daamgvale transationcellshi")
 #warning("mycard vc shi create cardic sheqimnass")
+#warning("gaaswore addcardis design")
+#warning("damate scan card ")
