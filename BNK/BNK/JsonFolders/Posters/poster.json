@@ -1,0 +1,84 @@
+{
+  "offers": [
+    {
+      "id": "res_01",
+      "brand": "The Daily Grind",
+      "offer_title": "15% OFF",
+      "description": "Breakfast Combo",
+      "promo_code": "BREKKIE15",
+      "expiry": "2026-12-31",
+      "image_url": "https://picsum.photos/id/425/160/205",
+      "category": "Cafe"
+    },
+    {
+      "id": "res_02",
+      "brand": "Pasta Primavera",
+      "offer_title": "10% OFF",
+      "description": "Signature Pasta",
+      "promo_code": "PASTA10",
+      "expiry": "2026-08-15",
+      "image_url": "https://picsum.photos/id/493/160/205",
+      "category": "Restaurant"
+    },
+    {
+      "id": "res_03",
+      "brand": "Urban Burger",
+      "offer_title": "FREE DRINK",
+      "description": "With Double Burger",
+      "promo_code": "FREEUP",
+      "expiry": "2026-06-20",
+      "image_url": "https://picsum.photos/id/163/160/205",
+      "category": "Fast Food"
+    },
+    {
+      "id": "res_04",
+      "brand": "Green Leaf",
+      "offer_title": "20% OFF",
+      "description": "Large Salad Bowls",
+      "promo_code": "HEALTH20",
+      "expiry": "2026-09-30",
+      "image_url": "https://picsum.photos/id/488/160/205",
+      "category": "Healthy"
+    },
+    {
+      "id": "res_05",
+      "brand": "Sushi Zen",
+      "offer_title": "$5 OFF",
+      "description": "Platters over $30",
+      "promo_code": "ZEN5",
+      "expiry": "2026-07-12",
+      "image_url": "https://picsum.photos/id/674/160/205",
+      "category": "Japanese"
+    },
+    {
+      "id": "res_06",
+      "brand": "The Pizza Oven",
+      "offer_title": "50% OFF",
+      "description": "Second Large Pizza",
+      "promo_code": "PIZZABOGO",
+      "expiry": "2026-11-25",
+      "image_url": "https://picsum.photos/id/566/160/205",
+      "category": "Restaurant"
+    },
+    {
+      "id": "res_07",
+      "brand": "Steak & Stone",
+      "offer_title": "15% OFF",
+      "description": "Date Night Special",
+      "promo_code": "DATE15",
+      "expiry": "2026-12-01",
+      "image_url": "https://picsum.photos/id/635/160/205",
+      "category": "Fine Dining"
+    },
+    {
+      "id": "res_08",
+      "brand": "Brew & Bite",
+      "offer_title": "50% OFF",
+      "description": "All Appetizers",
+      "promo_code": "HAPPYBITE",
+      "expiry": "2026-10-30",
+      "image_url": "https://picsum.photos/id/1060/160/205",
+      "category": "Pub & Grill"
+    }
+  ]
+}
