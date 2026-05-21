@@ -91,6 +91,7 @@ class DPTVC: UIViewController {
     private var tableViewHeightConstraint: NSLayoutConstraint?
     
     override func viewDidLoad() {
+        self.title = "მობილურზე ჩარიცხვა"
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()

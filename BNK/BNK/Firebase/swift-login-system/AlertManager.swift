@@ -17,8 +17,6 @@ class AlertManager {
         }
     }
 }
-
-// MARK: - Show Validation Alerts
 extension AlertManager {
     
     public static func showInvalidEmailAlert(on vc: UIViewController) {

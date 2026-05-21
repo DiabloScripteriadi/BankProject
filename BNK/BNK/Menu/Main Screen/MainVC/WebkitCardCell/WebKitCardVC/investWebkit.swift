@@ -8,14 +8,14 @@
 
 import UIKit
 import WebKit
-final class BetWebkitVC: UIViewController {
+final class investWebkitVC: UIViewController {
     private let webView = WKWebView()
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(webView)
-        guard let url = URL(string: "https://asvla.com") else { return }
+        guard let url = URL(string: "https://www.bybit.com/en/") else { return }
         webView.load(URLRequest(url: url))
-        
+        self.title = "InvestPage"
     }
      override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

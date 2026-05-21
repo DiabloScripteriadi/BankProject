@@ -235,12 +235,12 @@ class GetStartedVc: UIViewController {
 
             if success {
                 if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                    sceneDelegate.goToMain()
+                    sceneDelegate.goToMobileVc()
                 }
             }
         }
     }
-
+   
     private func setupKeyboardToolbar() {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()

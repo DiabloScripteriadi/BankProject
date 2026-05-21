@@ -67,7 +67,6 @@ class Card: UIView {
         lb.textColor = UIColor.white.withAlphaComponent(0.85)
         return lb
     }()
-
     private let mc1 = UIView()
     private let mc2 = UIView()
 

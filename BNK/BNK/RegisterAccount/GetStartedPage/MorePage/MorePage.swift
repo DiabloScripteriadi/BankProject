@@ -356,6 +356,3 @@ class MoreVc: UIViewController {
         }
     }
 }
-#warning("loading screen gaqvs gasaketebili romelic loadings moaxdens da gadava onboard screenze figmaze gadaamowme fetchavs datas")
-#warning("Forgot Pasword Page gasaketebeli")
-#warning("Design Dasaxvewi divider asatani yvelag page ze da gadasanawilebeli")

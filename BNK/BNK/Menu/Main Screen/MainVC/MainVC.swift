@@ -7,14 +7,14 @@
 import UIKit
 import FirebaseAuth
 import WebKit
+
 class MainVC: UIViewController, WKUIDelegate {
-    
     private let scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.backgroundColor = .systemBackground
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.isScrollEnabled = true
-        sv.showsVerticalScrollIndicator = false
+        sv.showsVerticalScrollIndicator = true
         sv.showsHorizontalScrollIndicator = false
         return sv
     }()
@@ -119,28 +119,6 @@ class MainVC: UIViewController, WKUIDelegate {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.text = "Add Money"
-        lbl.font = .systemFont(ofSize: 14, weight: .medium)
-        lbl.textColor = .label
-        lbl.numberOfLines = 0
-        lbl.textAlignment = .center
-        return lbl
-    }()
-    
-    private let myCardButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "creditcard.fill"), for: .normal)
-        btn.tintColor = .label
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.backgroundColor = .secondarySystemBackground
-        btn.layer.cornerRadius = 16
-        btn.clipsToBounds = true
-        return btn
-    }()
-    
-    private let myCardTitleLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.text = "My Card"
         lbl.font = .systemFont(ofSize: 14, weight: .medium)
         lbl.textColor = .label
         lbl.numberOfLines = 0
@@ -363,60 +341,69 @@ class MainVC: UIViewController, WKUIDelegate {
     
     public let addCardBtn: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("AddCard", for: .normal)
-        btn.setImage(UIImage(systemName: "plus"), for: .normal)
-        btn.tintColor = .label
-        btn.setTitleColor(.label, for: .normal)
-        btn.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 5, right: 12)
-        btn.backgroundColor = .secondarySystemBackground
-        btn.layer.cornerRadius = 20
-        btn.clipsToBounds = true
-        btn.imageEdgeInsets = UIEdgeInsets(top: -60, left: 45, bottom: 10, right: 4)
-        btn.titleLabel?.lineBreakMode = .byTruncatingMiddle
-        btn.layer.borderWidth = 1
-        btn.layer.borderColor = UIColor.orange.cgColor
+        btn.setTitle("Add Card", for: .normal)
+        btn.setTitleColor(.white, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
+        btn.backgroundColor = .black
+        btn.layer.cornerCurve = .continuous
+        btn.layer.cornerRadius = 22
+        btn.contentEdgeInsets = UIEdgeInsets(top: 18, left: 20, bottom: 18, right: 20)
+        btn.setImage(UIImage(systemName: "plus"), for: .normal)
+        btn.tintColor = .white
+        btn.semanticContentAttribute = .forceLeftToRight
+        btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -6, bottom: 0, right: 6)
+        btn.layer.shadowColor = UIColor.black.cgColor
+        btn.layer.shadowOpacity = 0.12
+        btn.layer.shadowOffset = CGSize(width: 0, height: 6)
+        btn.layer.shadowRadius = 12
         return btn
     }()
     private var injectedCardView: Card?
-    private var webView:WKWebView
-    
+    private var cardsCollectionTopConstraint: NSLayoutConstraint?
+
+    // Enforce a minimum height for the table so outer scroll always has enough content
+    private let tableMinHeight: CGFloat = 500
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        navigationController?.setNavigationBarHidden(true, animated: false)
         setupUI()
         populateUserInfo()
         setupAddCard()
-    }
-    override func loadView() {
-        let webConfiguration = WKWebViewConfiguration()
-        webView = WKWebView(frame: .zero, configuration: webConfiguration)
-        webView.uiDelegate = self
-        view = webView
+        // Ensure initial minimum height so the page scrolls even with few rows
+        tableViewHeightConstraint?.constant = tableMinHeight
+        view.layoutIfNeeded()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateTableViewHeight()
     }
+   override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        populateUserInfo()
+    }
     private func updateTableViewHeight() {
         todayTableView.layoutIfNeeded()
-        let height = todayTableView.contentSize.height
-        tableViewHeightConstraint?.constant = height
+        let intrinsic = todayTableView.contentSize.height
+        let target = max(intrinsic, tableMinHeight)
+        if tableViewHeightConstraint?.constant != target {
+            tableViewHeightConstraint?.constant = target
+            view.layoutIfNeeded()
+        }
     }
     private func setupAddCard() {
         NSLayoutConstraint.activate([
             addCardBtn.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 60),
             addCardBtn.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            addCardBtn.heightAnchor.constraint(equalToConstant: 120),
-            addCardBtn.widthAnchor.constraint(equalToConstant: 350),
+            addCardBtn.heightAnchor.constraint(equalToConstant: 60),
+            addCardBtn.widthAnchor.constraint(equalToConstant: 320),
         ])
     }
     private func setupUI() {
-        contentView.addSubview(addCardBtn)
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        contentView.addSubview(addCardBtn)
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -442,8 +429,6 @@ class MainVC: UIViewController, WKUIDelegate {
         contentView.addSubview(transferMoneyTitleLabel)
         contentView.addSubview(claimMoneyButton)
         contentView.addSubview(claimMoneyTitleLabel)
-        contentView.addSubview(myCardButton)
-        contentView.addSubview(myCardTitleLabel)
         contentView.addSubview(piggyBankView)
         contentView.addSubview(coinsView)
         contentView.addSubview(quickAccessTitleLabel)
@@ -453,10 +438,9 @@ class MainVC: UIViewController, WKUIDelegate {
         contentView.addSubview(todayLabel)
         contentView.addSubview(todayTableView)
         contentView.addSubview(cardsCollectionView)
-        contentView.addSubview(addCardBtn)
 
         NSLayoutConstraint.activate([
-            profileBtn.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            profileBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             profileBtn.heightAnchor.constraint(equalToConstant: 40),
             profileBtn.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
         ])
@@ -473,45 +457,38 @@ class MainVC: UIViewController, WKUIDelegate {
 
         NSLayoutConstraint.activate([
             mobileButton.topAnchor.constraint(equalTo: balanceLabel.bottomAnchor, constant: 24),
-            mobileButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            mobileButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 60),
             mobileButton.widthAnchor.constraint(equalToConstant: 64),
             mobileButton.heightAnchor.constraint(equalToConstant: 64),
-            
+
             transferMoneyButton.centerYAnchor.constraint(equalTo: mobileButton.centerYAnchor),
-            transferMoneyButton.leadingAnchor.constraint(equalTo: mobileButton.trailingAnchor, constant: 32),
+            transferMoneyButton.leadingAnchor.constraint(equalTo: mobileButton.trailingAnchor, constant: 40),
             transferMoneyButton.widthAnchor.constraint(equalTo: mobileButton.widthAnchor),
             transferMoneyButton.heightAnchor.constraint(equalTo: mobileButton.heightAnchor),
-            
-            claimMoneyButton.centerYAnchor.constraint(equalTo: transferMoneyButton.centerYAnchor),
-            claimMoneyButton.leadingAnchor.constraint(equalTo: transferMoneyButton.trailingAnchor, constant: 32),
-            claimMoneyButton.widthAnchor.constraint(equalTo: transferMoneyButton.widthAnchor),
-            claimMoneyButton.heightAnchor.constraint(equalTo: transferMoneyButton.heightAnchor),
-            
-            myCardButton.centerYAnchor.constraint(equalTo: claimMoneyButton.centerYAnchor),
-            myCardButton.leadingAnchor.constraint(equalTo: claimMoneyButton.trailingAnchor, constant: 32),
-            myCardButton.widthAnchor.constraint(equalTo: claimMoneyButton.widthAnchor),
-            myCardButton.heightAnchor.constraint(equalTo: claimMoneyButton.heightAnchor),
-            myCardButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
-            
+
+            claimMoneyButton.centerYAnchor.constraint(equalTo: mobileButton.centerYAnchor),
+            claimMoneyButton.leadingAnchor.constraint(equalTo: transferMoneyButton.trailingAnchor, constant: 40),
+            claimMoneyButton.widthAnchor.constraint(equalTo: mobileButton.widthAnchor),
+            claimMoneyButton.heightAnchor.constraint(equalTo: mobileButton.heightAnchor),
+            claimMoneyButton.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -20),
+
             mobileTitleLabel.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 6),
             mobileTitleLabel.centerXAnchor.constraint(equalTo: mobileButton.centerXAnchor),
-            mobileTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 80),
-            
+            mobileTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 120),
+
             transferMoneyTitleLabel.topAnchor.constraint(equalTo: transferMoneyButton.bottomAnchor, constant: 6),
             transferMoneyTitleLabel.centerXAnchor.constraint(equalTo: transferMoneyButton.centerXAnchor),
-            transferMoneyTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 80),
-            
+            transferMoneyTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 120),
+
             claimMoneyTitleLabel.topAnchor.constraint(equalTo: claimMoneyButton.bottomAnchor, constant: 6),
             claimMoneyTitleLabel.centerXAnchor.constraint(equalTo: claimMoneyButton.centerXAnchor),
-            claimMoneyTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 80),
-            
-            myCardTitleLabel.topAnchor.constraint(equalTo: myCardButton.bottomAnchor, constant: 6),
-            myCardTitleLabel.centerXAnchor.constraint(equalTo: myCardButton.centerXAnchor),
-            myCardTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 80)
+            claimMoneyTitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 120)
         ])
-        
+    
+        let initialTop = cardsCollectionView.topAnchor.constraint(equalTo: addCardBtn.bottomAnchor, constant: 10)
+        cardsCollectionTopConstraint = initialTop
         NSLayoutConstraint.activate([
-            cardsCollectionView.topAnchor.constraint(equalTo: addCardBtn.bottomAnchor, constant: 10),
+            initialTop,
             cardsCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             cardsCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             cardsCollectionView.heightAnchor.constraint(equalToConstant: 205)
@@ -519,7 +496,7 @@ class MainVC: UIViewController, WKUIDelegate {
 
         NSLayoutConstraint.activate([
             piggyBankView.topAnchor.constraint(equalTo: cardsCollectionView.bottomAnchor, constant: 8),
-            piggyBankView.leadingAnchor.constraint(equalTo: mobileButton.leadingAnchor),
+            piggyBankView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
             piggyBankView.heightAnchor.constraint(equalToConstant: 120),
             piggyBankView.widthAnchor.constraint(equalToConstant: 165)
         ])
@@ -562,7 +539,7 @@ class MainVC: UIViewController, WKUIDelegate {
             todayLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
         
-        tableViewHeightConstraint = todayTableView.heightAnchor.constraint(equalToConstant: 200)
+        tableViewHeightConstraint = todayTableView.heightAnchor.constraint(equalToConstant: tableMinHeight)
         tableViewHeightConstraint?.isActive = true
         
         NSLayoutConstraint.activate([
@@ -574,13 +551,11 @@ class MainVC: UIViewController, WKUIDelegate {
         addCardBtn.addTarget(self, action: #selector(didTapAddCard), for: .touchUpInside)
         mobileButton.addTarget(self, action: #selector(didTapDepTelephone), for: .touchUpInside)
         profileBtn.addTarget(self, action: #selector(didTapProfile), for: .touchUpInside)
-        profileBtn.addTarget(self, action: #selector(populateUserInfo), for: .valueChanged)
-        mobileButton.addTarget(self, action: #selector(didTapMobileDeposit), for: .touchUpInside)
         transferMoneyButton.addTarget(self, action: #selector(didTapTransferMoney), for: .touchUpInside)
         airTimeButton.addTarget(self, action: #selector(didTapAirTime), for: .touchUpInside)
         bettingButton.addTarget(self, action: #selector(didTapBetting), for: .touchUpInside)
         investButton.addTarget(self, action: #selector(didTapInvest), for: .touchUpInside)
-        
+        claimMoneyButton.addTarget(self, action: #selector(didTapClaimMoneyButton), for: .touchUpInside)
         let piggyTap = UITapGestureRecognizer(target: self, action: #selector(didTapPiggyBank))
         piggyBankView.isUserInteractionEnabled = true
         piggyBankView.addGestureRecognizer(piggyTap)
@@ -589,9 +564,8 @@ class MainVC: UIViewController, WKUIDelegate {
         coinsView.isUserInteractionEnabled = true
         coinsView.addGestureRecognizer(coinTap)
     }
-    
     @objc private func populateUserInfo() {
-        let email = Auth.auth().currentUser?.email
+        let email = Auth.auth().currentUser?.displayName
         let title = email ?? "No user"
         profileBtn.setTitle(" \(title)", for: .normal)
     }
@@ -604,8 +578,14 @@ class MainVC: UIViewController, WKUIDelegate {
         let vc = DPTVC()
         navigationController?.pushViewController(vc, animated: true)
     }
-    @objc private func didTapMobileDeposit() {}
-    @objc private func didTapTransferMoney() {}
+    @objc private func didTapTransferMoney() {
+        let vc = TranferMoneyVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    @objc private func didTapClaimMoneyButton() {
+        let vc = AddMoneyVC()
+        navigationController?.pushViewController(vc, animated: true)
+    }
     @objc private func didTapPiggyBank() {
         let vc = ProfileVC()
         navigationController?.pushViewController(vc, animated: true)
@@ -613,16 +593,18 @@ class MainVC: UIViewController, WKUIDelegate {
     @objc private func didTapCoins() {
         let vc = ProfileVC()
         navigationController?.pushViewController(vc, animated: true)
-        
     }
     @objc private func didTapAirTime() {
-        
+        let vc = AirTimeWebkitVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     @objc private func didTapBetting() {
-        
+        let vc = BetWebkitVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     @objc private func didTapInvest() {
-        
+        let vc = investWebkitVC()
+        navigationController?.pushViewController(vc, animated: true)
     }
     @objc private func didTapAddCard() {
         let vc = AddCardVc()
@@ -640,12 +622,7 @@ class MainVC: UIViewController, WKUIDelegate {
         present(vc, animated: true)
     }
 }
-private func webView() {
-    
-    let myURL = URL (string: "https://www.apple.com")
-    let myRequest = URLRequest(url: myURL!)
-  
-}
+
 extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         5
@@ -659,7 +636,7 @@ extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
 extension MainVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
+        10
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -673,33 +650,37 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource {
 }
 extension MainVC: ButtonDelegate {
     func didTapButton(with view: Card) {
+        // Deactivate old top constraint
+        cardsCollectionTopConstraint?.isActive = false
+        
+        // Remove previous injected view if any
         injectedCardView?.removeFromSuperview()
         injectedCardView = view
         
-        addCardBtn.isHidden = true
-        
+        // Add new card view
         view.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(view)
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 60),
-            view.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            view.widthAnchor.constraint(equalToConstant: 260),
+            view.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 24),
+            view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            view.heightAnchor.constraint(equalToConstant: 180)
         ])
         
-        
+        if addCardBtn.superview != nil {
+            addCardBtn.removeFromSuperview()
+        }
+        let newTop = cardsCollectionView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 16)
+        cardsCollectionTopConstraint = newTop
+        newTop.isActive = true
+        self.view.layoutIfNeeded()
+        updateTableViewHeight()
     }
 }
-
-import SwiftUI
-#Preview {
-    UINavigationController(rootViewController: MainVC())
-}
 #warning("ProfileButtonshi unda sheicvalos saxeli da daeweros saxeli romelitac shevedit")
-#warning("Investiciebis webkitebi")
 #warning("cardis webkitebi webkitebi")
 #warning("uiviewbis shecvalos randomizerit")
-#warning("ლოგინს სანამ დაამთავრებ დებითქარდი უნდა დავამატოთ ")
-#warning("gaakete timers daamgvale transationcellshi")
-#warning("mycard vc shi create cardic sheqimnass")
-#warning("gaaswore addcardis design")
 #warning("damate scan card ")
+#warning("prfoile button vc gasaketebeli gaqvs ar aris misamashabatebeli da design mosafiqrebeli plius funqciebic ")
+#warning("randomizer api posteer gvinda sadac nebismieri posteri gamochndeba sxvadasxva grafaze")
+

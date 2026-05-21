@@ -1,5 +1,5 @@
 //
-//  DPTVC.swift
+//  TranferMoneyVC.swift
 //  BNK
 //
 //  Created by chasemedkcorto on 12.03.26.
@@ -27,7 +27,7 @@ class TranferMoneyVC: UIViewController {
     
     private let titleLabel: UILabel = {
         let lb = UILabel()
-        lb.text = "Enter your phone number here."
+        lb.text = "Enter your Personal number here."
         lb.textColor = .gray
         lb.translatesAutoresizingMaskIntoConstraints = false
         lb.font = .systemFont(ofSize: 15, weight: .medium)
@@ -53,21 +53,18 @@ class TranferMoneyVC: UIViewController {
         return br
     }()
     
-    private let mobileBtn: UIButton = {
+    private let button: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Mobile Number\n555 555 5555", for: .normal)
-        btn.setImage(UIImage(systemName: "iphone"), for: .normal)
+        btn.setTitle("Continiu", for: .normal)
         btn.tintColor = .label
         btn.setTitleColor(.label, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 11, weight: .semibold)
         btn.titleLabel?.numberOfLines = 2
         btn.titleLabel?.textAlignment = .center
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         btn.backgroundColor = .secondarySystemBackground
         btn.layer.cornerRadius = 20
         btn.clipsToBounds = true
-        btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
         btn.titleLabel?.lineBreakMode = .byTruncatingMiddle
         return btn
     }()
@@ -87,19 +84,31 @@ class TranferMoneyVC: UIViewController {
     
     private var contactStore = CNContactStore()
     private var contacts = [ContactsStruct]()
-    private let stackView = UIStackView()
-    private var otpFields: [UITextField] = []
+  
     private let getStartedButton = UIButton(type: .system)
     private var tableViewHeightConstraint: NSLayoutConstraint?
+    
+    private let personalNumberField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Personal Number"
+        textField.keyboardType = .numberPad
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.textAlignment = .center
+        textField.backgroundColor = .secondarySystemBackground
+        textField.layer.cornerRadius = 12
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.systemGray4.cgColor
+        return textField
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
         searchBar.delegate = self
-        setupOTPFields()
         requestContactsAccessAndFetch()
         setupGetStartedButton()
+        self.title = "თანხის გადარიცხვა"
     }
     
     override func viewDidLayoutSubviews() {
@@ -113,44 +122,12 @@ class TranferMoneyVC: UIViewController {
         tableViewHeightConstraint?.constant = height
     }
     
-    private func setupOTPFields() {
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.spacing = 12
-        stackView.distribution = .fillEqually
-        
-        contentView.addSubview(stackView)
-        
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            stackView.heightAnchor.constraint(equalToConstant: 56)
-        ])
-        
-        for index in 0..<6 {
-            let tf = UITextField()
-            tf.keyboardType = .numberPad
-            tf.textAlignment = .center
-            tf.font = .systemFont(ofSize: 20, weight: .semibold)
-            tf.layer.borderWidth = 1
-            tf.layer.borderColor = UIColor.systemGray3.cgColor
-            tf.layer.cornerRadius = 12
-            tf.delegate = self
-            tf.tag = index
-            tf.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
-            
-            stackView.addArrangedSubview(tf)
-            otpFields.append(tf)
-        }
-    }
-    
     private func setupUI() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(titleLabel)
-        contentView.addSubview(stackView)
-        contentView.addSubview(mobileBtn)
+        contentView.addSubview(personalNumberField)
+        contentView.addSubview(button)
         contentView.addSubview(contactLabel)
         contentView.addSubview(searchBar)
         contentView.addSubview(contactsTableView)
@@ -176,17 +153,23 @@ class TranferMoneyVC: UIViewController {
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
         
+        NSLayoutConstraint.activate([
+            personalNumberField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            personalNumberField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            personalNumberField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            personalNumberField.heightAnchor.constraint(equalToConstant: 48)
+        ])
         
         NSLayoutConstraint.activate([
-            mobileBtn.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            mobileBtn.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 16),
-            mobileBtn.heightAnchor.constraint(equalToConstant: 40),
-            mobileBtn.widthAnchor.constraint(greaterThanOrEqualToConstant: 140)
+            button.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            button.topAnchor.constraint(equalTo: personalNumberField.bottomAnchor, constant: 16),
+            button.heightAnchor.constraint(equalToConstant: 40),
+            button.widthAnchor.constraint(greaterThanOrEqualToConstant: 140)
         ])
         
         NSLayoutConstraint.activate([
             contactLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            contactLabel.topAnchor.constraint(equalTo: mobileBtn.bottomAnchor, constant: 20),
+            contactLabel.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 20),
             contactLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16)
         ])
         
@@ -216,7 +199,7 @@ class TranferMoneyVC: UIViewController {
         getStartedButton.backgroundColor = .systemGray4
         getStartedButton.layer.cornerRadius = 14
         getStartedButton.isEnabled = false
-        getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
+//        getStartedButton.addTarget(self, action: #selector(getStartedTapped), for: .touchUpInside)
         view.addSubview(getStartedButton)
 
         NSLayoutConstraint.activate([
@@ -225,37 +208,6 @@ class TranferMoneyVC: UIViewController {
             getStartedButton.widthAnchor.constraint(equalToConstant: 300),
             getStartedButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-    }
-    
-    @objc private func getStartedTapped() {
-        getStartedButton.isEnabled = false
-        getStartedButton.backgroundColor = .systemGray4
-
-        getStartedButton.isEnabled = false
-
-        if getStartedButton.isSelected {
-            print("sss")
-        } else {
-            print("success")
-            self.getStartedButton.isEnabled = true
-            self.getStartedButton.backgroundColor = .black
-        }
-    }
-    private func updateButtonState() {
-        let enabled = otpFields.count == 6 && otpFields.allSatisfy({$0.text?.isEmpty == true || $0.text?.count == 1})
-
-        getStartedButton.isEnabled = enabled
-        getStartedButton.backgroundColor = enabled ? .black : .systemGray4
-    }
-    @objc private func textDidChange(_ textField: UITextField) {
-        if let text = textField.text, text.count == 1 {
-            let nextTag = textField.tag + 1
-            if nextTag < otpFields.count {
-                otpFields[nextTag].becomeFirstResponder()
-            } else {
-                textField.resignFirstResponder()
-            }
-        }
     }
     
     private func requestContactsAccessAndFetch() {
@@ -305,20 +257,6 @@ class TranferMoneyVC: UIViewController {
     }
 }
 
-extension TranferMoneyVC: UITextFieldDelegate {
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
-        if string.isEmpty {
-            textField.text = ""
-            let prevTag = textField.tag - 1
-            if prevTag >= 0 { otpFields[prevTag].becomeFirstResponder() }
-            return false
-        }
-        return textField.text?.isEmpty ?? true
-    }
-}
-
 extension TranferMoneyVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) { }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -348,3 +286,4 @@ extension TranferMoneyVC: UITableViewDelegate, UITableViewDataSource {
         50
     }
 }
+#warning("functionebi dasamatebeli ")

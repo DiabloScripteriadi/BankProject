@@ -35,7 +35,12 @@ class AuthService {
                 "username": userRequest.username,
                 "email": user.email ?? "",
                 "phone": user.phoneNumber ?? "",
-                "createdAt": FieldValue.serverTimestamp()
+                "createdAt": FieldValue.serverTimestamp(),
+                "account" : [
+                    "accountNUmber": UUID().uuidString,
+                    "balance"  : 0,
+                    "currency": "GEL"
+                ]
             ]
             
             self?.db.collection("users")
@@ -45,6 +50,7 @@ class AuthService {
                 }
         }
     }
+
     func updateUserProfile(email:String,username: String, lastName: String, birthDate: Date, completion: @escaping (Bool, Error?) -> Void) {
         guard let uid = auth.currentUser?.uid else {
             completion(false, NSError(domain: "AuthService", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
@@ -56,7 +62,8 @@ class AuthService {
             "username": username,
             "lastName": lastName,
             "birthDate": Timestamp(date: birthDate),
-            "updatedAt": FieldValue.serverTimestamp()
+            "updatedAt": FieldValue.serverTimestamp(),
+            "Personal number": "123456789"
         ]
         
         db.collection("users")
@@ -152,6 +159,25 @@ class AuthService {
         }
     }
     
+    // Transactions
+    func addTransaction(senderId: String, receiverId: String, amount: Double, completion: @escaping (Result<String, Error>) -> Void) {
+        let data: [String: Any] = [
+            "formerUserId": senderId,
+            "toUserId": receiverId,
+            "amount": amount,
+            "createdAt": Timestamp(date: Date())
+        ]
+        
+        db.collection("transactions").addDocument(data: data) { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                let ref = self.db.collection("transactions").addDocument(data: data)
+                completion(.success(ref.documentID))
+            }
+        }
+    }
+
     // Email Sign In
     func signIn(with userRequest: LoginUSerRequest, completion: @escaping (Error?) -> Void) {
         auth.signIn(withEmail: userRequest.email, password: userRequest.password) { _, error in
