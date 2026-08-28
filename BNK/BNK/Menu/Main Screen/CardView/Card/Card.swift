@@ -104,8 +104,8 @@ class Card: UIView {
         NSLayoutConstraint.activate([
             shadowContainer.centerXAnchor.constraint(equalTo: centerXAnchor),
             shadowContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
-            shadowContainer.widthAnchor.constraint(equalToConstant: 300),
-            shadowContainer.heightAnchor.constraint(equalToConstant: 180)
+            shadowContainer.widthAnchor.constraint(equalToConstant: 280),
+            shadowContainer.heightAnchor.constraint(equalToConstant: 165)
         ])
     }
 

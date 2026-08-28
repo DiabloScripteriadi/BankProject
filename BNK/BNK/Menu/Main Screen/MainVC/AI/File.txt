@@ -1,4 +1,0 @@
-override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    view.bringSubviewToFront(aiOrbButton)
-}

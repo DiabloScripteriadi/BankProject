@@ -174,7 +174,25 @@ class AddCardVc: UIViewController, UITextFieldDelegate {
         }
         cardView.updateExpiry(formatted)
     }
-    
+    private func setupKeyboardToolbar() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        toolbar.items = [flex, done]
+        expiryDateTextField.inputAccessoryView = toolbar
+        cardNumberTextField.inputAccessoryView = toolbar
+        cvvTextField.inputAccessoryView = toolbar
+        
+    }
+
+    @objc private func doneTapped() {
+        view.endEditing(true)
+    }
+
+    @objc private func handleBackgroundTap() {
+        view.endEditing(true)
+    }
     @objc private func holderChanged() {
         let text = cardHolderNameTextField.text ?? ""
         cardView.updateHolder(text)

@@ -10,14 +10,14 @@ import UIKit
 final class FuturisticInfoCard: UIView {
 
     private let gradientLayer = CAGradientLayer()
-    private let highlightLayer = CAGradientLayer()
+    private let overlayLayer = CAGradientLayer()
 
     private let iconContainer = UIView()
     private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let valueLabel = UILabel()
 
-    private let gradientColors: [UIColor]
+    private let bgColors: [UIColor]
     private let accentColors: [UIColor]
 
     init(
@@ -27,7 +27,7 @@ final class FuturisticInfoCard: UIView {
         gradientColors: [UIColor],
         accentColors: [UIColor]
     ) {
-        self.gradientColors = gradientColors
+        self.bgColors = gradientColors
         self.accentColors = accentColors
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
@@ -36,17 +36,17 @@ final class FuturisticInfoCard: UIView {
         layer.cornerCurve = .continuous
         clipsToBounds = true
 
-        // Gradient background
-        gradientLayer.colors = gradientColors.map { $0.cgColor }
+        // Background gradient
+        gradientLayer.colors = bgColors.map { $0.cgColor }
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint(x: 1, y: 1)
         layer.insertSublayer(gradientLayer, at: 0)
 
-        // Subtle highlight overlay
-        highlightLayer.colors = accentColors.map { $0.withAlphaComponent(0.25).cgColor }
-        highlightLayer.startPoint = CGPoint(x: 0, y: 0)
-        highlightLayer.endPoint = CGPoint(x: 1, y: 0)
-        layer.insertSublayer(highlightLayer, at: 1)
+        // Subtle overlay gradient for depth
+        overlayLayer.colors = accentColors.map { $0.withAlphaComponent(0.25).cgColor }
+        overlayLayer.startPoint = CGPoint(x: 0, y: 0)
+        overlayLayer.endPoint = CGPoint(x: 1, y: 0)
+        layer.insertSublayer(overlayLayer, at: 1)
 
         // Icon container
         iconContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -54,11 +54,13 @@ final class FuturisticInfoCard: UIView {
         iconContainer.layer.cornerRadius = 16
         iconContainer.layer.cornerCurve = .continuous
 
+        // Icon
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.image = UIImage(systemName: symbolName)
         iconView.tintColor = .white
         iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
 
+        // Labels
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = title
         titleLabel.font = .systemFont(ofSize: 13, weight: .medium)
@@ -93,13 +95,13 @@ final class FuturisticInfoCard: UIView {
             valueLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -14)
         ])
 
-        // Optional border / shadow for definition over busy gradients
+        // Light border and shadow
         layer.borderColor = UIColor.white.withAlphaComponent(0.12).cgColor
         layer.borderWidth = 1.0 / UIScreen.main.scale
 
         layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.12
-        layer.shadowRadius = 10
+        layer.shadowOpacity = 0.10
+        layer.shadowRadius = 8
         layer.shadowOffset = CGSize(width: 0, height: 6)
     }
 
@@ -110,19 +112,10 @@ final class FuturisticInfoCard: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = bounds
-        highlightLayer.frame = bounds
+        overlayLayer.frame = bounds
     }
 
-    // Public updaters if you need to change values later
-    func update(title: String) {
-        titleLabel.text = title
-    }
-
-    func update(value: String) {
-        valueLabel.text = value
-    }
-
-    func update(symbolName: String) {
-        iconView.image = UIImage(systemName: symbolName)
-    }
+    func update(title: String) { titleLabel.text = title }
+    func update(value: String) { valueLabel.text = value }
+    func update(symbolName: String) { iconView.image = UIImage(systemName: symbolName) }
 }

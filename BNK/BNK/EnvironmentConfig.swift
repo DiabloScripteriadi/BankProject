@@ -8,15 +8,15 @@
 import Foundation
 import FirebaseCore
 
+/// აპის გარემო (საჭიროების შემთხვევაში დაამატე .staging/.production)
 enum AppEnvironment: String {
     case debug
     case release
-    // დამატებით: case staging, case production
 }
 
 struct EnvironmentConfig {
 
-    // ამოიცნობს გარემოს კომპილაციის დროშებით.
+    /// კომპილაციის დროშებით ვასხვავებთ გარემოს.
     static var current: AppEnvironment {
         #if DEBUG
         return .debug
@@ -25,16 +25,14 @@ struct EnvironmentConfig {
         #endif
     }
 
-    // თუ ერთიან plist-ს იყენებ, ეს მეთოდი უბრალოდ დააბრუნებს nil-ს და FirebaseApp.configure() გამოიყენებს ნაგულისხმევს.
-    // თუ სხვადასხვა plist გექნება, აქ ჩატვირთავ შესაბამისს.
+    /// FirebaseOptions თუ დააბრუნა, AppBootstrapper გამოიყენებს მას.
+    /// ახლა ნაგულისხმევად ვაბრუნებთ nil-ს, რომ პროექტში არსებულ GoogleService-Info.plist-ს დაეყრდნოს.
     static func firebaseOptions() -> FirebaseOptions? {
         switch current {
         case .debug:
-            // თუ გინდა Debug-ზე ცალკე პროექტი:
             // return options(named: "GoogleService-Info-Debug")
             return nil
         case .release:
-            // თუ Release-ზე სხვა plist გაქვს:
             // return options(named: "GoogleService-Info-Release")
             return nil
         }

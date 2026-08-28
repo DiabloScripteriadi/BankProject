@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
 
-        goToController(with: MainVC())
+        goToController(with: SpaceVC())
     }
 
     func checkAuthentication() {

@@ -7,8 +7,10 @@
 import UIKit
 import FirebaseAuth
 import WebKit
+import SafariServices
 
-class MainVC: UIViewController, WKUIDelegate {
+class MainVC: UIViewController, WKUIDelegate, UIGestureRecognizerDelegate {
+    
     private let scrollView : UIScrollView = {
         let sv = UIScrollView()
         sv.backgroundColor = .systemBackground
@@ -16,6 +18,8 @@ class MainVC: UIViewController, WKUIDelegate {
         sv.isScrollEnabled = true
         sv.showsVerticalScrollIndicator = true
         sv.showsHorizontalScrollIndicator = false
+        sv.delaysContentTouches = false
+        sv.canCancelContentTouches = true
         return sv
     }()
     
@@ -24,7 +28,11 @@ class MainVC: UIViewController, WKUIDelegate {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+    private let aiOrbButton: AIOrbButton = {
+        let button = AIOrbButton(diameter: 68)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     private let profileBtn: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("User", for: .normal)
@@ -39,6 +47,8 @@ class MainVC: UIViewController, WKUIDelegate {
         btn.clipsToBounds = true
         btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
         btn.titleLabel?.lineBreakMode = .byTruncatingMiddle
+        btn.layer.borderWidth = 1
+        btn.layer.borderColor = UIColor.separator.cgColor
         return btn
     }()
     
@@ -132,7 +142,7 @@ class MainVC: UIViewController, WKUIDelegate {
         layout.minimumLineSpacing = -40
         layout.minimumInteritemSpacing = 5
         let width: CGFloat = 160
-        layout.itemSize = CGSize(width: width, height: 205)
+        layout.itemSize = CGSize(width: 160, height: 205)
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .clear
         cv.translatesAutoresizingMaskIntoConstraints = false
@@ -140,94 +150,36 @@ class MainVC: UIViewController, WKUIDelegate {
         cv.dataSource = self
         cv.delegate = self
         cv.showsHorizontalScrollIndicator = false
+        cv.delaysContentTouches = false
         return cv
     }()
-    
-    private let piggyBankView: UIView = {
-        let view = UIView()
+    private var offers: [Offer] = []
+    private let CardMannager = CardManager()
+    private let piggyBankView: FuturisticInfoCard = {
+        let view = FuturisticInfoCard(
+            title: "My Piggy Bank",
+            value: "$0.00 $",
+            symbolName: "banknote.fill",
+            gradientColors: [.systemTeal, .systemIndigo],
+            accentColors: [.systemCyan, .systemPurple]
+        )
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemYellow
-        view.layer.cornerRadius = 16
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.systemPink.cgColor
-        
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "pigybank")
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = .systemPink
-        imageView.contentMode = .scaleAspectFit
-        imageView.widthAnchor.constraint(equalToConstant: 32).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
-        
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "My Piggy Bank"
-        label.font = .systemFont(ofSize: 14, weight: .light)
-        label.textColor = .label
-        label.textAlignment = .center
-        
-        let pigyBalanceLabel = UILabel()
-        pigyBalanceLabel.translatesAutoresizingMaskIntoConstraints = false
-        pigyBalanceLabel.text = "$0.00 $"
-        pigyBalanceLabel.font = .systemFont(ofSize: 19, weight: .bold)
-        pigyBalanceLabel.textColor = .label
-            
-        view.addSubview(pigyBalanceLabel)
-        view.addSubview(imageView)
-        view.addSubview(label)
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            label.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 2),
-            label.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            pigyBalanceLabel.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 3),
-            pigyBalanceLabel.leadingAnchor.constraint(equalTo: label.leadingAnchor),
-            pigyBalanceLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25),
-        ])
         return view
     }()
     
     private let coinsView: UIView = {
-        let view = UIView()
+        let view = FuturisticInfoCard(
+            title: "Swift Coins",
+            value: "170 Coin",
+            symbolName: "bitcoinsign.circle.fill",
+            gradientColors: [
+                UIColor.systemYellow, UIColor.systemOrange
+            ],
+            accentColors: [
+                UIColor.systemPink, UIColor.systemOrange
+            ]
+        )
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemYellow
-        view.layer.cornerRadius = 16
-        view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor.systemPink.cgColor
-        
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "coin")
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = .systemPink
-        imageView.contentMode = .scaleAspectFit
-        imageView.widthAnchor.constraint(equalToConstant: 32).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
-        
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Swift Coins"
-        label.font = .systemFont(ofSize: 14, weight: .light)
-        label.textColor = .label
-        label.textAlignment = .center
-        
-        let pigyBalanceLabel = UILabel()
-        pigyBalanceLabel.translatesAutoresizingMaskIntoConstraints = false
-        pigyBalanceLabel.text = "170 Coin"
-        pigyBalanceLabel.font = .systemFont(ofSize: 19, weight: .bold)
-        pigyBalanceLabel.textColor = .label
-            
-        view.addSubview(pigyBalanceLabel)
-        view.addSubview(imageView)
-        view.addSubview(label)
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            label.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 2),
-            label.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            pigyBalanceLabel.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 3),
-            pigyBalanceLabel.leadingAnchor.constraint(equalTo: label.leadingAnchor),
-            pigyBalanceLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25),
-        ])
         return view
     }()
     
@@ -244,24 +196,19 @@ class MainVC: UIViewController, WKUIDelegate {
         let btn = UIButton(type: .system)
         btn.setTitle("AirTime", for: .normal)
         btn.setImage(UIImage(systemName: "phone.fill"), for: .normal)
-
         btn.tintColor = .label
         btn.setTitleColor(.label, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-
         btn.backgroundColor = .secondarySystemBackground
         btn.layer.cornerRadius = 20
         btn.translatesAutoresizingMaskIntoConstraints = false
-
         btn.semanticContentAttribute = .forceLeftToRight
         btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
-
         btn.setPreferredSymbolConfiguration(
             UIImage.SymbolConfiguration(pointSize: 16, weight: .medium),
             forImageIn: .normal
         )
-
         return btn
     }()
 
@@ -269,24 +216,19 @@ class MainVC: UIViewController, WKUIDelegate {
         let btn = UIButton(type: .system)
         btn.setTitle("Betting", for: .normal)
         btn.setImage(UIImage(systemName: "soccerball"), for: .normal)
-
         btn.tintColor = .label
         btn.setTitleColor(.label, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-
         btn.backgroundColor = .secondarySystemBackground
         btn.layer.cornerRadius = 20
         btn.translatesAutoresizingMaskIntoConstraints = false
-
         btn.semanticContentAttribute = .forceLeftToRight
         btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
-
         btn.setPreferredSymbolConfiguration(
             UIImage.SymbolConfiguration(pointSize: 16, weight: .medium),
             forImageIn: .normal
         )
-
         return btn
     }()
 
@@ -294,24 +236,19 @@ class MainVC: UIViewController, WKUIDelegate {
         let btn = UIButton(type: .system)
         btn.setTitle("Invest", for: .normal)
         btn.setImage(UIImage(systemName: "chart.line.uptrend.xyaxis"), for: .normal)
-
         btn.tintColor = .label
         btn.setTitleColor(.label, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
-
         btn.backgroundColor = .secondarySystemBackground
         btn.layer.cornerRadius = 20
         btn.translatesAutoresizingMaskIntoConstraints = false
-
         btn.semanticContentAttribute = .forceLeftToRight
         btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 4)
-
         btn.setPreferredSymbolConfiguration(
             UIImage.SymbolConfiguration(pointSize: 16, weight: .medium),
             forImageIn: .normal
         )
-
         return btn
     }()
 
@@ -359,11 +296,17 @@ class MainVC: UIViewController, WKUIDelegate {
         btn.layer.shadowRadius = 12
         return btn
     }()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        view.bringSubviewToFront(aiOrbButton)
+    }
+
     private var injectedCardView: Card?
     private var cardsCollectionTopConstraint: NSLayoutConstraint?
 
-    // Enforce a minimum height for the table so outer scroll always has enough content
     private let tableMinHeight: CGFloat = 500
+    private let heightDeadzone: CGFloat = 0.5
+    private var pendingHeightUpdate = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -371,27 +314,68 @@ class MainVC: UIViewController, WKUIDelegate {
         setupUI()
         populateUserInfo()
         setupAddCard()
-        // Ensure initial minimum height so the page scrolls even with few rows
+        CardMannager.getCardCellData { [weak self] loadedOffers in
+              guard let self = self else { return }
+              
+              DispatchQueue.main.async {
+                  self.offers = loadedOffers
+                  self.cardsCollectionView.reloadData()
+              }
+          }
+        // Gestures: allow simultaneous recognition
+        scrollView.panGestureRecognizer.cancelsTouchesInView = false
+
+        // Insets so outer scroll has space at bottom
+        scrollView.contentInset.bottom = 24
+        scrollView.verticalScrollIndicatorInsets.bottom = 24
+
+        // Initial minimum height
         tableViewHeightConstraint?.constant = tableMinHeight
         view.layoutIfNeeded()
-    }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateTableViewHeight()
-    }
-   override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        populateUserInfo()
-    }
-    private func updateTableViewHeight() {
-        todayTableView.layoutIfNeeded()
-        let intrinsic = todayTableView.contentSize.height
-        let target = max(intrinsic, tableMinHeight)
-        if tableViewHeightConstraint?.constant != target {
-            tableViewHeightConstraint?.constant = target
-            view.layoutIfNeeded()
+
+        DispatchQueue.main.async { [weak self] in
+            self?.updateTableViewHeight()
         }
     }
+
+    // Gesture recognizer delegate
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        populateUserInfo()
+        updateTableViewHeight()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateTableViewHeight()
+    }
+
+    private func updateTableViewHeight() {
+        if pendingHeightUpdate { return }
+        pendingHeightUpdate = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.todayTableView.layoutIfNeeded()
+            let intrinsic = self.todayTableView.contentSize.height
+            let target = max(intrinsic, self.tableMinHeight)
+            if let current = self.tableViewHeightConstraint?.constant, abs(current - target) < self.heightDeadzone {
+                self.pendingHeightUpdate = false
+                return
+            }
+            self.tableViewHeightConstraint?.constant = target
+            UIView.performWithoutAnimation {
+                self.view.layoutIfNeeded()
+            }
+            self.scrollView.layoutIfNeeded()
+            self.pendingHeightUpdate = false
+        }
+    }
+
     private func setupAddCard() {
         NSLayoutConstraint.activate([
             addCardBtn.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 60),
@@ -404,7 +388,8 @@ class MainVC: UIViewController, WKUIDelegate {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(addCardBtn)
-        
+        view.addSubview(aiOrbButton)
+
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -440,9 +425,9 @@ class MainVC: UIViewController, WKUIDelegate {
         contentView.addSubview(cardsCollectionView)
 
         NSLayoutConstraint.activate([
-            profileBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
-            profileBtn.heightAnchor.constraint(equalToConstant: 40),
-            profileBtn.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
+            profileBtn.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 6),
+            profileBtn.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            profileBtn.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
@@ -489,9 +474,10 @@ class MainVC: UIViewController, WKUIDelegate {
         cardsCollectionTopConstraint = initialTop
         NSLayoutConstraint.activate([
             initialTop,
-            cardsCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            cardsCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            cardsCollectionView.heightAnchor.constraint(equalToConstant: 205)
+            cardsCollectionView.topAnchor.constraint(equalTo: addCardBtn.bottomAnchor, constant: 20),
+            cardsCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            cardsCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            cardsCollectionView.heightAnchor.constraint(equalToConstant: 210) 
         ])
 
         NSLayoutConstraint.activate([
@@ -548,6 +534,15 @@ class MainVC: UIViewController, WKUIDelegate {
             todayTableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             todayTableView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -24)
         ])
+        //AI ORB BUTTOn
+        NSLayoutConstraint.activate([
+            aiOrbButton.widthAnchor.constraint(equalToConstant: 68),
+            aiOrbButton.heightAnchor.constraint(equalToConstant: 68),
+
+            aiOrbButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            aiOrbButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
+        ])
+
         addCardBtn.addTarget(self, action: #selector(didTapAddCard), for: .touchUpInside)
         mobileButton.addTarget(self, action: #selector(didTapDepTelephone), for: .touchUpInside)
         profileBtn.addTarget(self, action: #selector(didTapProfile), for: .touchUpInside)
@@ -556,20 +551,47 @@ class MainVC: UIViewController, WKUIDelegate {
         bettingButton.addTarget(self, action: #selector(didTapBetting), for: .touchUpInside)
         investButton.addTarget(self, action: #selector(didTapInvest), for: .touchUpInside)
         claimMoneyButton.addTarget(self, action: #selector(didTapClaimMoneyButton), for: .touchUpInside)
+        aiOrbButton.addTarget(self, action: #selector(didTapAIOrb), for: .touchUpInside)
+
         let piggyTap = UITapGestureRecognizer(target: self, action: #selector(didTapPiggyBank))
+        piggyTap.cancelsTouchesInView = false
         piggyBankView.isUserInteractionEnabled = true
         piggyBankView.addGestureRecognizer(piggyTap)
         
         let coinTap = UITapGestureRecognizer(target: self, action: #selector(didTapCoins))
+        coinTap.cancelsTouchesInView = false
         coinsView.isUserInteractionEnabled = true
         coinsView.addGestureRecognizer(coinTap)
     }
-    @objc private func populateUserInfo() {
-        let email = Auth.auth().currentUser?.displayName
-        let title = email ?? "No user"
-        profileBtn.setTitle(" \(title)", for: .normal)
+    @objc
+    private func didTapAIOrb() {
+        let vc = ChatViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
-    
+
+    @objc private func populateUserInfo() {
+        let displayName = Auth.auth().currentUser?.displayName?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let email = Auth.auth().currentUser?.email?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let title = (displayName?.isEmpty == false ? displayName : email) ?? "User"
+        DispatchQueue.main.async {
+            self.profileBtn.setTitle(" \(title)", for: .normal)
+        }
+    }
+    private func GetCardData() {
+        CardMannager.getCardCellData { [weak self] loadedOffers in
+            DispatchQueue.main.async {
+                self?.offers = loadedOffers
+                self?.cardsCollectionView.reloadData()
+            }
+        }
+    }
+//    func getCardPressed() {
+//        CardManager.getCardCellData { [weak self] offers in
+//            DispatchQueue.main.async {
+//                self?.offers = offers
+//                self?.cardsCollectionView.reloadData()
+//            }
+//        }
     @objc private func didTapProfile() {
         let vc = ProfileVC()
         navigationController?.pushViewController(vc, animated: true)
@@ -609,7 +631,8 @@ class MainVC: UIViewController, WKUIDelegate {
     @objc private func didTapAddCard() {
         let vc = AddCardVc()
         vc.delegate = self
-        
+        vc.modalPresentationStyle = .pageSheet
+
         if let sheet = vc.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
@@ -618,29 +641,36 @@ class MainVC: UIViewController, WKUIDelegate {
             sheet.largestUndimmedDetentIdentifier = .large
         }
 
-        vc.modalPresentationStyle = .overFullScreen
         present(vc, animated: true)
     }
 }
 
 extension MainVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        5
+        return 10
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardsCell", for: indexPath) as! CardsCell
+        if indexPath.item < offers.count {
+              let currentCard = offers[indexPath.item]
+              cell.configure(with: currentCard)
+          } else {
+
+          }
         return cell
     }
 }
 
 extension MainVC: UITableViewDelegate, UITableViewDataSource {
+    //სამწუხაროდ პირფველ 10ს წამოიღებს შაფლის ვერსია უნდა გავაკეთოთ და მოვიძიოთ რო ყოველთვის სხვადსხვა 10 წამოიღოს 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         10
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionCell") as! TransactionCell
+        
         return cell
     }
     
@@ -648,39 +678,55 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource {
         return 80
     }
 }
+
 extension MainVC: ButtonDelegate {
     func didTapButton(with view: Card) {
-        // Deactivate old top constraint
         cardsCollectionTopConstraint?.isActive = false
         
-        // Remove previous injected view if any
         injectedCardView?.removeFromSuperview()
         injectedCardView = view
         
-        // Add new card view
         view.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(view)
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 24),
+            view.topAnchor.constraint(equalTo: mobileButton.bottomAnchor, constant: 45),
             view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            view.heightAnchor.constraint(equalToConstant: 180)
+            cardsCollectionView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
         ])
         
         if addCardBtn.superview != nil {
             addCardBtn.removeFromSuperview()
         }
-        let newTop = cardsCollectionView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 16)
+        let newTop = cardsCollectionView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 56)
         cardsCollectionTopConstraint = newTop
         newTop.isActive = true
-        self.view.layoutIfNeeded()
-        updateTableViewHeight()
+
+        UIView.performWithoutAnimation {
+            self.view.layoutIfNeeded()
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.updateTableViewHeight()
+        }
+    }
+}
+//safari Services პასუხსიმგებელია პოსტერ აპის ვებსაიტ ურლზე გადასასვლელად
+extension MainVC {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard indexPath.item < offers.count else { return }
+        
+        let selectedOffer = offers[indexPath.item]
+        
+        guard let url = URL(string: selectedOffer.websiteURL) else {
+            print("Invalid URL string: \(selectedOffer.websiteURL)")
+            return
+        }
+        
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.modalPresentationStyle = .pageSheet
+        self.present(safariVC, animated: true, completion: nil)
     }
 }
 #warning("ProfileButtonshi unda sheicvalos saxeli da daeweros saxeli romelitac shevedit")
-#warning("cardis webkitebi webkitebi")
-#warning("uiviewbis shecvalos randomizerit")
 #warning("damate scan card ")
-#warning("prfoile button vc gasaketebeli gaqvs ar aris misamashabatebeli da design mosafiqrebeli plius funqciebic ")
 #warning("randomizer api posteer gvinda sadac nebismieri posteri gamochndeba sxvadasxva grafaze")
-

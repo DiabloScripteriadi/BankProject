@@ -293,6 +293,7 @@ class loginVC: UIViewController {
         toolbar.items = [flex, done]
         emailTextField.inputAccessoryView = toolbar
         passwordTextField.inputAccessoryView = toolbar
+        
     }
     
     private func setupTapToDismiss() {
@@ -309,3 +310,4 @@ class loginVC: UIViewController {
         view.endEditing(true)
     }
 }
+

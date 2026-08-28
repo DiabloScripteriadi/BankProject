@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// აქ მოვუყაროთ თავი მაგიურ სტრინგებს/რიცხვებს/სურათების სახელებს/URL-ებს.
 enum Constants {
     enum UserDefaultsKeys {
         static let selectedLanguage = "app.selectedLanguage"
@@ -23,12 +24,13 @@ enum Constants {
         static let privacyPolicy = "https://www.apple.com/legal/privacy/"
         static let invest = "https://www.bybit.com/en/"
         static let bet = "https://asvla.com"
-        // static let airtime = "https://..." // დაამატებ როცა გექნება
+        //airtime
     }
 
     enum Layout {
         static let tableMinHeight: CGFloat = 500
         static let defaultCornerRadius: CGFloat = 16
+        static let defaultShadowOpacity: Float = 0.06
     }
 
     enum Symbols {

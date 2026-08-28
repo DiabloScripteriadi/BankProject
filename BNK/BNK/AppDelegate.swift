@@ -5,14 +5,17 @@
 //  Created by chasemedkcorto on 05.01.26.
 //
 import UIKit
-import FirebaseCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    private let bootstrapper = AppBootstrapper()
+
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        FirebaseApp.configure()
+
+        bootstrapper.configureServices()
+
         return true
     }
 

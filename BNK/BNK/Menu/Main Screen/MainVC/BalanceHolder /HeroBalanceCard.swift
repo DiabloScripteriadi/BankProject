@@ -1,3 +1,11 @@
+//
+//  HeroBalanceCard.swift
+//  BNK
+//
+//  Created by chasemedkcorto on 22.07.26.
+//
+
+
 import UIKit
 
 final class HeroBalanceCard: UIView {

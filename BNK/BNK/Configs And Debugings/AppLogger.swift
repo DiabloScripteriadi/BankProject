@@ -19,9 +19,11 @@ enum AppLogger {
         #if DEBUG
         print("[\(level.rawValue)][\(category)] \(message)")
         #else
-        // Release-ში სურვილისამებრ ჩაკეტე debug/info:
-        if level == .warning || level == .error {
+        switch level {
+        case .warning, .error:
             print("[\(level.rawValue)][\(category)] \(message)")
+        default:
+            break
         }
         #endif
     }
