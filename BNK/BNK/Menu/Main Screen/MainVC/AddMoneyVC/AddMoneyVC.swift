@@ -10,7 +10,6 @@ import UIKit
 final class AddMoneyVC: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
-    
     private let titleLabel: UILabel = {
         let lb = UILabel()
         lb.text = "Add Money"
@@ -19,7 +18,6 @@ final class AddMoneyVC: UIViewController {
         lb.numberOfLines = 0
         return lb
     }()
-    
     private let subtitleLabel: UILabel = {
         let lb = UILabel()
         lb.text = "Enter an amount and choose a funding method."
@@ -28,7 +26,6 @@ final class AddMoneyVC: UIViewController {
         lb.numberOfLines = 0
         return lb
     }()
-    
     private let amountContainer = UIView()
     private let amountField: UITextField = {
         let tf = UITextField()
@@ -39,13 +36,11 @@ final class AddMoneyVC: UIViewController {
         tf.textColor = .label
         return tf
     }()
-    
     private let methodControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: ["Card", "Bank", "Apple Pay", "PiggyBank"])
         sc.selectedSegmentIndex = 0
         return sc
     }()
-    
     private let continueButton: UIButton = {
         let bt = UIButton(type: .system)
         bt.setTitle("Continue", for: .normal)
@@ -56,7 +51,7 @@ final class AddMoneyVC: UIViewController {
         bt.isEnabled = false
         return bt
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -65,8 +60,10 @@ final class AddMoneyVC: UIViewController {
         setupUI()
         setupKeyboardToolbar()
         setupTapToDismiss()
+        amountField.addTarget(self, action: #selector(amountChanged), for: .editingChanged)
+        continueButton.addTarget(self, action: #selector(didTapContinue), for: .touchUpInside)
     }
-    
+
     private func setupScroll() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +74,6 @@ final class AddMoneyVC: UIViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
@@ -85,77 +81,84 @@ final class AddMoneyVC: UIViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
         ])
     }
-    
+
     private func setupUI() {
         amountContainer.translatesAutoresizingMaskIntoConstraints = false
         amountContainer.layer.cornerRadius = 12
         amountContainer.layer.borderWidth = 1
         amountContainer.layer.borderColor = UIColor.systemGray4.cgColor
         amountContainer.backgroundColor = .secondarySystemBackground
-        
+
         amountField.translatesAutoresizingMaskIntoConstraints = false
         methodControl.translatesAutoresizingMaskIntoConstraints = false
         continueButton.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
+
         contentView.addSubview(titleLabel)
         contentView.addSubview(subtitleLabel)
         contentView.addSubview(amountContainer)
         amountContainer.addSubview(amountField)
         contentView.addSubview(methodControl)
         view.addSubview(continueButton)
-        
+
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 20),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
+
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
+
             amountContainer.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 20),
             amountContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             amountContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             amountContainer.heightAnchor.constraint(equalToConstant: 72),
-            
+
             amountField.leadingAnchor.constraint(equalTo: amountContainer.leadingAnchor, constant: 12),
             amountField.trailingAnchor.constraint(equalTo: amountContainer.trailingAnchor, constant: -12),
             amountField.centerYAnchor.constraint(equalTo: amountContainer.centerYAnchor),
-            
+
             methodControl.topAnchor.constraint(equalTo: amountContainer.bottomAnchor, constant: 16),
             methodControl.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             methodControl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
+
             continueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             continueButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
             continueButton.widthAnchor.constraint(equalToConstant: 300),
             continueButton.heightAnchor.constraint(equalToConstant: 60),
-            
+
             methodControl.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -100)
         ])
     }
-    
+
     @objc private func amountChanged() {
         let valid = parsedAmount() > 0
         continueButton.isEnabled = valid
         continueButton.backgroundColor = valid ? .black : .systemGray4
     }
-    
+
     private func parsedAmount() -> Double {
         let raw = amountField.text?.replacingOccurrences(of: ",", with: ".") ?? ""
         return Double(raw) ?? 0
     }
-    
+
     @objc private func didTapContinue() {
         let amount = parsedAmount()
         guard amount > 0 else { return }
-        let method = methodControl.titleForSegment(at: methodControl.selectedSegmentIndex) ?? "Unknown"
-        let message = String(format: "Adding %.2f via %@", amount, method)
-        AlertManager.showBasicAlert(on: self, title: "Confirm", message: message)
+        let delta = Int(amount.rounded())
+        AuthService.shared.updateBalance(delta: delta) { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                AlertManager.showBasicAlert(on: self, title: "Error", message: error.localizedDescription)
+            } else {
+                AlertManager.showBasicAlert(on: self, title: "Success", message: "Balance updated by ₾\(delta)")
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
-    
+
     private func setupKeyboardToolbar() {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -164,19 +167,18 @@ final class AddMoneyVC: UIViewController {
         toolbar.items = [flex, done]
         amountField.inputAccessoryView = toolbar
     }
-    
+
     private func setupTapToDismiss() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
-    
+
     @objc private func doneTapped() {
         view.endEditing(true)
     }
-    
+
     @objc private func handleBackgroundTap() {
         view.endEditing(true)
     }
 }
-#warning("Authsevicshi functionebic unda damdatdes da gaswordes damatdes da updatedes da daemotos balance")

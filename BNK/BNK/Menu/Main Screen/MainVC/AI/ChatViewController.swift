@@ -167,3 +167,6 @@ extension ChatViewController: UITextViewDelegate {
 
 
 // TODO: // გასაკეთბელია და აი გაკეთებულია იმპლენტაცია გასაკეთებეული როდესაც ფულს გადავიხდით 
+#Preview {
+    ChatViewController()
+}

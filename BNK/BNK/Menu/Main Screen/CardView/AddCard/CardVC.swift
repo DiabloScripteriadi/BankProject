@@ -7,9 +7,13 @@
 
 import UIKit
 import CreditCardFormatter
+import FirebaseFirestore
+import FirebaseAuth
+
 protocol ButtonDelegate {
     func didTapButton(with view: Card)
 }
+
 class AddCardVc: UIViewController, UITextFieldDelegate {
     var delegate: ButtonDelegate?
     private let scrollView = UIScrollView()
@@ -18,7 +22,7 @@ class AddCardVc: UIViewController, UITextFieldDelegate {
     private let titleLabel: UILabel = {
         let lb = UILabel()
         lb.text = "Add New Card"
-        lb.textColor = .label
+        lb.textColor = .gray
         lb.font = .systemFont(ofSize: 20, weight: .heavy)
         lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
@@ -26,10 +30,8 @@ class AddCardVc: UIViewController, UITextFieldDelegate {
     
     private let cardView = Card()
     
-    private let cardNumberTextField = AddCardVc.makeTextField("Card Number")
-    private let cardHolderNameTextField = AddCardVc.makeTextField("Card Holder Name")
-    private let expiryDateTextField = AddCardVc.makeTextField("MM/YY")
-    private let cvvTextField = AddCardVc.makeTextField("CVV")
+    private let cardHolderNameTextField = AddCardVc.makeTextField("Enter your full name")
+    private let monthlySpendingTextField = AddCardVc.makeTextField("2500$")
     
     private let addCardBtn: UIButton = {
         let bt = UIButton(type: .system)
@@ -40,10 +42,69 @@ class AddCardVc: UIViewController, UITextFieldDelegate {
         bt.layer.cornerRadius = 16
         return bt
     }()
+    
+    private let onlinePaymentsBtn: UIButton = {
+        let bt = UIButton(type: .system)
+        bt.translatesAutoresizingMaskIntoConstraints = false
+        bt.setTitle("Online Payments", for: .normal)
+        bt.setTitleColor(.black, for: .normal)
+        bt.backgroundColor = .systemYellow
+        bt.layer.cornerRadius = 16
+        return bt
+    }()
+    
+    private let virtualCardLabel: UILabel = {
+        let lb = UILabel()
+        lb.text = "VIRTUAL CARD"
+        lb.font = .systemFont(ofSize: 11, weight: .heavy)
+        lb.textColor = .gray
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
+    
+    private let newCardLbael: UILabel = {
+        let lb = UILabel()
+        lb.text = "Your new card is ready in seconds."
+        lb.font = .systemFont(ofSize: 25, weight: .heavy)
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        lb.textColor = .black
+        lb.numberOfLines = 0
+        return lb
+    }()
+    
+    private let descriptionLabel: UILabel = {
+        let lb = UILabel()
+        lb.text = "Use it for online shopping and subscriptions. Freeze or delete it whenever you need."
+        lb.font = .systemFont(ofSize: 13, weight: .regular)
+        lb.textColor = .black
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        lb.numberOfLines = 0
+        return lb
+    }()
+    
+    private let cardHolderLabel: UILabel = {
+        let lb = UILabel()
+        lb.text = "CARDHOLDER NAME"
+        lb.font = .systemFont(ofSize: 11, weight: .heavy)
+        lb.textColor = .gray
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
+    
+    private let monthlySpendingLimitLabel: UILabel = {
+        let lb = UILabel()
+        lb.text = "MONTHLY SPENDING LIMIT"
+        lb.font = .systemFont(ofSize: 11, weight: .heavy)
+        lb.textColor = .gray
+        lb.translatesAutoresizingMaskIntoConstraints = false
+        return lb
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
+        editButtonItem.title = "Done"
+        navigationItem.title = "Create Card"
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
         setupScroll()
         setupUI()
         setupFields()
@@ -63,57 +124,74 @@ class AddCardVc: UIViewController, UITextFieldDelegate {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
         ])
     }
     
     private func setupUI() {
+        contentView.addSubview(virtualCardLabel)
+        contentView.addSubview(newCardLbael)
         contentView.addSubview(titleLabel)
+        contentView.addSubview(descriptionLabel)
         contentView.addSubview(cardView)
-        contentView.addSubview(cardNumberTextField)
+        contentView.addSubview(cardHolderLabel)
         contentView.addSubview(cardHolderNameTextField)
-        contentView.addSubview(expiryDateTextField)
-        contentView.addSubview(cvvTextField)
+        contentView.addSubview(monthlySpendingTextField)
+        contentView.addSubview(monthlySpendingLimitLabel)
         contentView.addSubview(addCardBtn)
         
         cardView.translatesAutoresizingMaskIntoConstraints = false
+        monthlySpendingTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        let side = CGFloat(24)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            virtualCardLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 60),
+            virtualCardLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            virtualCardLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -side),
             
-            cardView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
+            newCardLbael.topAnchor.constraint(equalTo: virtualCardLabel.bottomAnchor, constant: 12),
+            newCardLbael.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            newCardLbael.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -side),
+            
+            titleLabel.topAnchor.constraint(equalTo: newCardLbael.bottomAnchor, constant: 13),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -side),
+            
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -side),
+            
+            cardView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 35),
             cardView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            cardView.widthAnchor.constraint(equalToConstant: 300),
+            cardView.widthAnchor.constraint(equalToConstant: 350),
             cardView.heightAnchor.constraint(equalToConstant: 200),
             
-            cardNumberTextField.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 20),
-            cardNumberTextField.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            cardNumberTextField.widthAnchor.constraint(equalToConstant: 300),
-            cardNumberTextField.heightAnchor.constraint(equalToConstant: 50),
+            cardHolderLabel.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 40),
+            cardHolderLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            cardHolderLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -side),
             
-            cardHolderNameTextField.topAnchor.constraint(equalTo: cardNumberTextField.bottomAnchor, constant: 12),
-            cardHolderNameTextField.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            cardHolderNameTextField.widthAnchor.constraint(equalToConstant: 300),
+            cardHolderNameTextField.topAnchor.constraint(equalTo: cardHolderLabel.bottomAnchor, constant: 8),
+            cardHolderNameTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            cardHolderNameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -side),
             cardHolderNameTextField.heightAnchor.constraint(equalToConstant: 50),
             
-            expiryDateTextField.topAnchor.constraint(equalTo: cardHolderNameTextField.bottomAnchor, constant: 12),
-            expiryDateTextField.leadingAnchor.constraint(equalTo: cardHolderNameTextField.leadingAnchor),
-            expiryDateTextField.widthAnchor.constraint(equalToConstant: 140),
-            expiryDateTextField.heightAnchor.constraint(equalToConstant: 50),
+            monthlySpendingLimitLabel.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 125),
+            monthlySpendingLimitLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            monthlySpendingLimitLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -side),
             
-            cvvTextField.topAnchor.constraint(equalTo: cardHolderNameTextField.bottomAnchor, constant: 12),
-            cvvTextField.trailingAnchor.constraint(equalTo: cardHolderNameTextField.trailingAnchor),
-            cvvTextField.widthAnchor.constraint(equalToConstant: 140),
-            cvvTextField.heightAnchor.constraint(equalToConstant: 50),
+            monthlySpendingTextField.topAnchor.constraint(equalTo: cardHolderNameTextField.bottomAnchor, constant: 35),
+            monthlySpendingTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            monthlySpendingTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -side),
+            monthlySpendingTextField.heightAnchor.constraint(equalToConstant: 50),
             
-            addCardBtn.topAnchor.constraint(equalTo: expiryDateTextField.bottomAnchor, constant: 20),
-            addCardBtn.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            addCardBtn.widthAnchor.constraint(equalToConstant: 220),
+            addCardBtn.topAnchor.constraint(equalTo: monthlySpendingTextField.bottomAnchor, constant: 20),
+            addCardBtn.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: side),
+            addCardBtn.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -side),
             addCardBtn.heightAnchor.constraint(equalToConstant: 50),
             addCardBtn.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -40)
         ])
@@ -123,125 +201,130 @@ class AddCardVc: UIViewController, UITextFieldDelegate {
         let tx = UITextField()
         tx.translatesAutoresizingMaskIntoConstraints = false
         tx.placeholder = placeholder
-        tx.textAlignment = .center
-        tx.backgroundColor = .systemGray5
-        tx.layer.cornerRadius = 24
+        tx.textAlignment = .left
+        tx.backgroundColor = .white
+        tx.layer.cornerRadius = 22
+        tx.layer.masksToBounds = true
+        let padding = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 1))
+        tx.leftView = padding
+        tx.leftViewMode = .always
         return tx
     }
     
     private func setupFields() {
-        cardNumberTextField.keyboardType = .numberPad
-        expiryDateTextField.keyboardType = .numberPad
-        cvvTextField.keyboardType = .numberPad
-        cvvTextField.isSecureTextEntry = true
-        
         cardHolderNameTextField.autocapitalizationType = .words
+        cardHolderNameTextField.delegate = self
+        cardHolderNameTextField.layer.borderColor = UIColor.black.cgColor
+        cardHolderNameTextField.layer.borderWidth = 0.5
         
-        cardNumberTextField.delegate = self
-        expiryDateTextField.delegate = self
-        cvvTextField.delegate = self
+        monthlySpendingTextField.autocapitalizationType = .words
+        monthlySpendingTextField.delegate = self
+        monthlySpendingTextField.layer.borderColor = UIColor.black.cgColor
+        monthlySpendingTextField.layer.borderWidth = 0.5
     }
     
     private func setupActions() {
-        cardNumberTextField.addTarget(self, action: #selector(cardNumberChanged), for: .editingChanged)
-        expiryDateTextField.addTarget(self, action: #selector(expiryChanged), for: .editingChanged)
         cardHolderNameTextField.addTarget(self, action: #selector(holderChanged), for: .editingChanged)
+        monthlySpendingTextField.addTarget(self, action: #selector(holderChanged), for: .editingChanged)
+        
         addCardBtn.addTarget(self, action: #selector(addCardTapped), for: .touchUpInside)
         addCardBtn.addTarget(self, action: #selector(buttonTap), for: .touchUpInside)
     }
     
-    
-    private let ccFormatter = CreditCardFormatter()
-    @objc private func cardNumberChanged() {
-        let raw = cardNumberTextField.text ?? ""
-        let masked = ccFormatter.formattedString(from: raw)
-        if cardNumberTextField.text != masked {
-            cardNumberTextField.text = masked
-        }
-        cardView.updateNumber(masked)
-    }
-    
-    @objc private func expiryChanged() {
-        let digits = (expiryDateTextField.text ?? "").filter { $0.isNumber }
-        let limited = String(digits.prefix(4))
-        var formatted = ""
-        for (i, ch) in limited.enumerated() {
-            if i == 2 { formatted.append("/") }
-            formatted.append(ch)
-        }
-        if expiryDateTextField.text != formatted {
-            expiryDateTextField.text = formatted
-        }
-        cardView.updateExpiry(formatted)
-    }
-    private func setupKeyboardToolbar() {
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let done = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
-        toolbar.items = [flex, done]
-        expiryDateTextField.inputAccessoryView = toolbar
-        cardNumberTextField.inputAccessoryView = toolbar
-        cvvTextField.inputAccessoryView = toolbar
-        
-    }
-
     @objc private func doneTapped() {
         view.endEditing(true)
     }
-
+    
     @objc private func handleBackgroundTap() {
         view.endEditing(true)
     }
+    
     @objc private func holderChanged() {
         let text = cardHolderNameTextField.text ?? ""
         cardView.updateHolder(text)
     }
+    
     @objc func buttonTap() {
         delegate?.didTapButton(with: cardView)
     }
+    
     @objc private func addCardTapped() {
-        let number = (cardNumberTextField.text ?? "").replacingOccurrences(of: " ", with: "")
-        let holder = cardHolderNameTextField.text ?? ""
-        let expiry = expiryDateTextField.text ?? ""
-        let cvv = cvvTextField.text ?? ""
+        let holder = (cardHolderNameTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !holder.isEmpty else { return }
+     
+        let number = generateMastercardNumber()
+        let cvv = String(format: "%03d", Int.random(in: 0...999))
+        let expiry = generateExpiryMMYY(yearsAhead: 3)
         
-        guard !number.isEmpty, !holder.isEmpty, !expiry.isEmpty, !cvv.isEmpty else {
+        let formatter = CreditCardFormatter()
+        let masked = formatter.formattedString(from: number)
+        cardView.updateNumber(masked)
+        cardView.updateExpiry(expiry)
+        cardView.updateHolder(holder)
+        cardView.updateConstraints()
+        let last4 = String(number.suffix(4))
+        let brand = "Mastercard"
+        let paymentMethodId = UUID().uuidString
         
-            return
-        }
+        print("🔍 ვცდილობ ბარათის შენახვას... Last4: \(last4), UID: \(Auth.auth().currentUser?.uid ?? "NIL")")
         
-        AuthService.shared.createCard(cardNumber: number, cardHolder: holder, expireDate: expiry, cvv: cvv) { [weak self] success, error in
+        AuthService.shared.createCardSecurely(last4: last4, brand: brand, paymentMethodId: paymentMethodId) { [weak self] (success: Bool, error: Error?) in
             DispatchQueue.main.async {
                 if success {
+                    print("✅ ბარათი წარმატებით აიტვირთა კონტროლერში!")
+                    // Notify delegate to inject the card and hide button
+                    self?.delegate?.didTapButton(with: self?.cardView ?? Card())
+                    // Close the sheet
                     self?.dismiss(animated: true, completion: nil)
                 } else {
-                    print("Create card error: \(error?.localizedDescription ?? "error")")
+                    print("❌ ბარათის ატვირთვის ერორი: \(error?.localizedDescription ?? "unknown error")")
                 }
             }
         }
     }
     
+    // Generator
+    private func generateMastercardNumber() -> String {
+        let bin = Int.random(in: 51...55)
+        var digits: [Int] = [bin / 10, bin % 10]
+        for _ in 4..<14 {
+            digits.append(Int.random(in: 0...9))
+        }
+        let check = luhnCheckDigit(for: digits)
+        digits.append(check)
+        return digits.map(String.init).joined()
+    }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
-        if textField == cardNumberTextField || textField == expiryDateTextField || textField == cvvTextField {
-            if !string.isEmpty {
-                let allowed = CharacterSet.decimalDigits
-                if string.rangeOfCharacter(from: allowed.inverted) != nil {
-                    return false
-                }
+    private func luhnCheckDigit(for digits: [Int]) -> Int {
+        var sum = 0
+        for (idx, d) in digits.reversed().enumerated() {
+            if idx % 2 == 0 {
+                let doubled = d * 2
+                sum += (doubled > 9) ? (doubled - 9) : doubled
+            } else {
+                sum += d
             }
         }
-        
-        if textField == cvvTextField {
-            let current = textField.text ?? ""
-            guard let r = Range(range, in: current) else { return false }
-            let updated = current.replacingCharacters(in: r, with: string)
-           
-            return updated.count <= 3
-        }
-        
+        let mod = sum % 10
+        return (10 - mod) % 10
+    }
+    
+    private func generateExpiryMMYY(yearsAhead: Int = 3) -> String {
+        let cal = Calendar(identifier: .gregorian)
+        let now = Date()
+        guard let future = cal.date(byAdding: .year, value: yearsAhead, to: now) else { return "12/30" }
+        let comps = cal.dateComponents([.month, .year], from: future)
+        let mm = String(format: "%02d", comps.month ?? 12)
+        let yy = String(format: "%02d", (comps.year ?? 2030) % 100)
+        return "\(mm)/\(yy)"
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return true
     }
 }
+
+#Preview{
+    AddCardVc()
+}
+

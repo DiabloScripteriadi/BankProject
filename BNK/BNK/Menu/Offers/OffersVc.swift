@@ -9,6 +9,8 @@ import UIKit
 import SwiftUI
 
 class OffersVc: UIViewController, UISearchBarDelegate {
+    private let headerSpacing : CGFloat = 12
+    private let cardSize = CGSize(width: 280, height:200)
     let cardManager = CardManager()
     private let offersBtn: UIButton = {
         let btn = UIButton(type: .system)
@@ -72,9 +74,9 @@ class OffersVc: UIViewController, UISearchBarDelegate {
     private lazy var cardsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 2
-        layout.minimumInteritemSpacing = 2
-        layout.itemSize = .zero // delegate provides size
+        layout.minimumLineSpacing = 12
+        layout.minimumInteritemSpacing = 12
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 24, right: 20)
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .clear
         cv.translatesAutoresizingMaskIntoConstraints = false
@@ -162,11 +164,12 @@ class OffersVc: UIViewController, UISearchBarDelegate {
     private func setupCollectionView() {
         view.addSubview(cardsCollectionView)
         NSLayoutConstraint.activate([
-            cardsCollectionView.topAnchor.constraint(equalTo: offersBtn.bottomAnchor, constant: 16),
-            cardsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            cardsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            cardsCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            cardsCollectionView.topAnchor.constraint(equalTo: offersBtn.bottomAnchor, constant: headerSpacing),
+            cardsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            cardsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            cardsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+
     }
     
     var offerTitle: [Offer] = []
@@ -211,17 +214,13 @@ extension OffersVc: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         guard let flow = collectionViewLayout as? UICollectionViewFlowLayout else {
-            return CGSize(width: 160, height: 200)
+            return cardSize
         }
-        let spacing = flow.minimumInteritemSpacing
-        let availableWidth = collectionView.bounds.width
-        let columns: CGFloat = availableWidth > 450 ? 2 : 2
-        let totalSpacing = (columns - 2) * spacing
-        let itemWidth = floor((availableWidth - totalSpacing) / columns)
-        let itemHeight = max(itemWidth * 1.3, 180)
-        return CGSize(width: itemWidth, height: itemHeight)
+        let horizontalInsets = flow.sectionInset.left + flow.sectionInset.right
+        let width = collectionView.bounds.width - horizontalInsets
+        return CGSize(width: width, height: cardSize.height)
     }
-}
+    }
  
 extension OffersVc {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -246,3 +245,7 @@ extension OffersVc {
         searchBar.resignFirstResponder()
     }
 }
+
+//#Preview {
+//    OffersVc()
+//}

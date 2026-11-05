@@ -10,7 +10,7 @@ import UIKit
 final class BNKTabBarController: UITabBarController, UITabBarControllerDelegate {
 
     private enum TabIndex: Int {
-        case main = 0
+        case home = 0
         case space = 1
         case plus = 2
         case offers = 3
@@ -39,48 +39,47 @@ final class BNKTabBarController: UITabBarController, UITabBarControllerDelegate 
     }
 
     private func setupTabs() {
-        // 1. Main
-        let mainVC = MainVC()
-        let mainNav = UINavigationController(rootViewController: mainVC)
-        mainNav.tabBarItem = UITabBarItem(title: "Main",
+        // მთავარი (Home)
+        let homeVC = MainVC()
+        let homeNav = UINavigationController(rootViewController: homeVC)
+        homeNav.tabBarItem = UITabBarItem(title: "Main",
                                           image: UIImage(systemName: "house"),
                                           selectedImage: UIImage(systemName: "house.fill"))
 
-        // 2. Space
+        // სივრცე (Space)
         let spaceVC = SpaceVC()
         let spaceNav = UINavigationController(rootViewController: spaceVC)
         spaceNav.tabBarItem = UITabBarItem(title: "Space",
                                            image: UIImage(systemName: "square.grid.2x2"),
                                            selectedImage: UIImage(systemName: "square.grid.2x2.fill"))
 
-        // 3. Plus (action-only)
-        let plusDummy = UIViewController()
-        plusDummy.view.backgroundColor = .clear
-        plusDummy.tabBarItem = UITabBarItem(title: nil,
-                                            image: UIImage(systemName: "plus.circle"),
-                                            selectedImage: UIImage(systemName: "plus.circle.fill"))
-        // უფრო目ყავი ცენტრში
-        plusDummy.tabBarItem.imageInsets = UIEdgeInsets(top: -2, left: 0, bottom: 2, right: 0)
+        // ცენტრის პლიუსი (მოქმედება בלבד)
+        let centerVC = UIViewController()
+        let basePlus = UIImage(systemName: "plus.circle.fill")
+        let biggerPlus = basePlus?.applyingSymbolConfiguration(.init(pointSize: 26, weight: .bold))
+        let blackPlus = biggerPlus?.withTintColor(.black, renderingMode: .alwaysOriginal)
+        let centerItem = UITabBarItem(title: nil, image: blackPlus, selectedImage: blackPlus)
+        centerItem.imageInsets = UIEdgeInsets(top: 2, left: 0, bottom: -2, right: 0)
+        centerVC.tabBarItem = centerItem
 
-        // 4. Offers
+        // შეთავაზებები (Offers)
         let offersVC = OffersVc()
         let offersNav = UINavigationController(rootViewController: offersVC)
         offersNav.tabBarItem = UITabBarItem(title: "Offers",
                                             image: UIImage(systemName: "tag"),
                                             selectedImage: UIImage(systemName: "tag.fill"))
 
-        // 5. Profile
+        // პროფილი (Profile)
         let profileVC = ProfileVC()
         let profileNav = UINavigationController(rootViewController: profileVC)
         profileNav.tabBarItem = UITabBarItem(title: "Profile",
                                              image: UIImage(systemName: "person.crop.circle"),
                                              selectedImage: UIImage(systemName: "person.crop.circle.fill"))
 
-        viewControllers = [mainNav, spaceNav, plusDummy, offersNav, profileNav]
-        selectedIndex = TabIndex.main.rawValue
+        viewControllers = [homeNav, spaceNav, centerVC, offersNav, profileNav]
+        selectedIndex = TabIndex.home.rawValue
     }
 
-    // Center Plus: intercept selection to present AddCardVc
     func tabBarController(_ tabBarController: UITabBarController,
                           shouldSelect viewController: UIViewController) -> Bool {
         guard let vcs = viewControllers,
@@ -95,9 +94,9 @@ final class BNKTabBarController: UITabBarController, UITabBarControllerDelegate 
 
     private func presentAddCard() {
         let addVC = AddCardVc()
-        // თუ გინდათ MainVC-ს დაებმოს დელეგატი, ვიპოვოთ MainVC-ს instance
-        if let mainNav = viewControllers?[TabIndex.main.rawValue] as? UINavigationController,
-           let main = mainNav.viewControllers.first as? MainVC {
+        // MainVC-ს მივაბათ delegate, რომ ბარათის შექმნის შემდეგ იმუშაოს მის UI-ში
+        if let homeNav = viewControllers?[TabIndex.home.rawValue] as? UINavigationController,
+           let main = homeNav.viewControllers.first as? MainVC {
             addVC.delegate = main
         }
 

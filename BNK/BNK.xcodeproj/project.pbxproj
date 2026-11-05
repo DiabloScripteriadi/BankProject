@@ -59,8 +59,27 @@
 		7D1E19472F25867C0031BD86 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7D1E19462F25867C0031BD86 /* FirebaseAnalyticsCore */; };
 		7D1E19492F2586820031BD86 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 7D1E19482F2586820031BD86 /* FirebaseAnalyticsIdentitySupport */; };
 		7D61EEF32F0FC6F600CF972A /* CountryPickerView in Frameworks */ = {isa = PBXBuildFile; productRef = 7D61EEF22F0FC6F600CF972A /* CountryPickerView */; };
+		7D6347E0308BA3F000677EF8 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6347DF308BA3F000677EF8 /* FirebaseDatabase */; };
+		7D6347E2308BA3F000677EF8 /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6347E1308BA3F000677EF8 /* FirebaseInAppMessaging-Beta */; };
+		7D6347E4308BA3F000677EF8 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6347E3308BA3F000677EF8 /* FirebaseMessaging */; };
+		7D6347E6308BA42B00677EF8 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6347E5308BA42B00677EF8 /* FirebaseAnalytics */; };
+		7D6347E8308BA42B00677EF8 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6347E7308BA42B00677EF8 /* FirebaseDatabase */; };
+		7D6347EA308BA42B00677EF8 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6347E9308BA42B00677EF8 /* FirebaseStorage */; };
 		7D996DD02F588822001883DD /* CreditCardFormatter in Frameworks */ = {isa = PBXBuildFile; productRef = 7D996DCF2F588822001883DD /* CreditCardFormatter */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7D6347FB308BA98D00677EF8 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7D61EE612F0FBA9A00CF972A /* CountryPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CountryPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +105,11 @@
 			path = BNK;
 			sourceTree = "<group>";
 		};
+		7D6347F0308BA98D00677EF8 /* NotificationServiceExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = NotificationServiceExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,20 +127,25 @@
 				7D026C922F199D5D0098BAFC /* FirebaseAILogic in Frameworks */,
 				7D61EEF32F0FC6F600CF972A /* CountryPickerView in Frameworks */,
 				7D1E18072F23AC6E0031BD86 /* FirebaseMLModelDownloader in Frameworks */,
+				7D6347E8308BA42B00677EF8 /* FirebaseDatabase in Frameworks */,
 				7D026CBC2F199D5D0098BAFC /* FirebaseStorage in Frameworks */,
 				7D026CAA2F199D5D0098BAFC /* FirebaseFirestoreCombine-Community in Frameworks */,
 				7D1E17F12F23AC6E0031BD86 /* FirebaseAuth in Frameworks */,
 				7D1E19472F25867C0031BD86 /* FirebaseAnalyticsCore in Frameworks */,
 				7D996DD02F588822001883DD /* CreditCardFormatter in Frameworks */,
 				7D1E17EF2F23AC6E0031BD86 /* FirebaseAppDistribution-Beta in Frameworks */,
+				7D6347E4308BA3F000677EF8 /* FirebaseMessaging in Frameworks */,
+				7D6347E6308BA42B00677EF8 /* FirebaseAnalytics in Frameworks */,
 				7D026CA22F199D5D0098BAFC /* FirebaseCore in Frameworks */,
 				7D1E17F52F23AC6E0031BD86 /* FirebaseCore in Frameworks */,
 				7D026C982F199D5D0098BAFC /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				7D026CB42F199D5D0098BAFC /* FirebaseMLModelDownloader in Frameworks */,
+				7D6347EA308BA42B00677EF8 /* FirebaseStorage in Frameworks */,
 				7D026C962F199D5D0098BAFC /* FirebaseAnalyticsCore in Frameworks */,
 				7D1E17E92F23AC6E0031BD86 /* FirebaseAnalyticsCore in Frameworks */,
 				7D1E18012F23AC6E0031BD86 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				7D026CB62F199D5D0098BAFC /* FirebaseMessaging in Frameworks */,
+				7D6347E0308BA3F000677EF8 /* FirebaseDatabase in Frameworks */,
 				7D026CB22F199D5D0098BAFC /* FirebaseInstallations in Frameworks */,
 				7D1E17ED2F23AC6E0031BD86 /* FirebaseAppCheck in Frameworks */,
 				7D1E17E32F23AC6E0031BD86 /* FirebaseAI in Frameworks */,
@@ -131,6 +160,7 @@
 				7D1E180D2F23AC6E0031BD86 /* FirebaseRemoteConfig in Frameworks */,
 				7D1E18032F23AC6E0031BD86 /* FirebaseInAppMessaging-Beta in Frameworks */,
 				7D1E17E52F23AC6E0031BD86 /* FirebaseAILogic in Frameworks */,
+				7D6347E2308BA3F000677EF8 /* FirebaseInAppMessaging-Beta in Frameworks */,
 				7D026C902F199D5D0098BAFC /* FirebaseAI in Frameworks */,
 				7D026CAC2F199D5D0098BAFC /* FirebaseFunctions in Frameworks */,
 				7D026CBA2F199D5D0098BAFC /* FirebaseRemoteConfig in Frameworks */,
@@ -164,6 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				7D5731A62F144E6200E75E79 /* BNK */,
+				7D6347F0308BA98D00677EF8 /* NotificationServiceExtension */,
 				7C638E5C61E06A3EECCA9CE4 /* Frameworks */,
 				7DCA76632F0F0D3C00898481 /* Products */,
 			);
@@ -187,6 +218,7 @@
 				7DCA765E2F0F0D3C00898481 /* Sources */,
 				7DCA765F2F0F0D3C00898481 /* Frameworks */,
 				7DCA76602F0F0D3C00898481 /* Resources */,
+				7D6347FB308BA98D00677EF8 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -271,12 +303,11 @@
 				DEVELOPMENT_TEAM = 3P9994X9QZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BNK/Info.plist;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "this contains for bluethooth";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Its Use Of Contacts";
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "იდენტიფიკაციის გასასვლელად";
-				INFOPLIST_KEY_NSIdentityUsageDescription = "";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ფოტოს დამატება პროფაილზე";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "for identificaton on registration";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "must be something";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "add photo for profile";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -309,12 +340,11 @@
 				DEVELOPMENT_TEAM = 3P9994X9QZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BNK/Info.plist;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "this contains for bluethooth";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Its Use Of Contacts";
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "იდენტიფიკაციის გასასვლელად";
-				INFOPLIST_KEY_NSIdentityUsageDescription = "";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "ფოტოს დამატება პროფაილზე";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "for identificaton on registration";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "must be something";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "add photo for profile";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -767,6 +797,36 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7D61EEF12F0FC6F600CF972A /* XCRemoteSwiftPackageReference "CountryPickerView" */;
 			productName = CountryPickerView;
+		};
+		7D6347DF308BA3F000677EF8 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		7D6347E1308BA3F000677EF8 /* FirebaseInAppMessaging-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseInAppMessaging-Beta";
+		};
+		7D6347E3308BA3F000677EF8 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		7D6347E5308BA42B00677EF8 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		7D6347E7308BA42B00677EF8 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		7D6347E9308BA42B00677EF8 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D026C8C2F198B210098BAFC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		7D996DCF2F588822001883DD /* CreditCardFormatter */ = {
 			isa = XCSwiftPackageProductDependency;

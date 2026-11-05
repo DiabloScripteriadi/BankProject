@@ -16,7 +16,7 @@ final class AppBootstrapper {
     /// აპის გაშვებისას გამოძახებული საჯარო მეთოდი.
     /// აქედან ხდება ყველა სერვისის კონფიგურაცია/ინიციალიზაცია.
     func configureServices() {
-        configureFirebase()
+//        configureFirebase()
         configureLogger()
         //  სხვა სერვისები:
         // configureCrashReporting()
@@ -31,15 +31,15 @@ final class AppBootstrapper {
     /// Firebase-ის ინიციალიზაცია.
     /// თუ EnvironmentConfig.firebaseOptions() დააბრუნებს options-ს, გამოვიყენებთ მას.
     /// წინააღმდეგ შემთხვევაში, დავეყრდნობით ნაგულისხმევ GoogleService-Info.plist-ს.
-    private func configureFirebase() {
-        if let options = EnvironmentConfig.firebaseOptions() {
-            FirebaseApp.configure(options: options)
-            AppLogger.log("Firebase configured with explicit options for \(EnvironmentConfig.current)", level: .info, category: "Bootstrap")
-        } else {
-            FirebaseApp.configure()
-            AppLogger.log("Firebase configured with default plist", level: .info, category: "Bootstrap")
-        }
-    }
+//    private func configureFirebase() {
+//        if let options = EnvironmentConfig.firebaseOptions() {
+//            FirebaseApp.configure(options: options)
+//            AppLogger.log("Firebase configured with explicit options for \(EnvironmentConfig.current)", level: .info, category: "Bootstrap")
+//        } else {
+//            FirebaseApp.configure()
+//            AppLogger.log("Firebase configured with default plist", level: .info, category: "Bootstrap")
+//        }
+//    }
 
     // MARK: - Logger
 

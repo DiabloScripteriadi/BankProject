@@ -6,55 +6,38 @@
 //
 
 import UIKit
-
 class AnalysisCell: UITableViewCell {
 
     var onTap: (() -> Void)?
-    var ringColors: [UIColor] = [
-        UIColor(red: 0.36, green: 0.31, blue: 0.91, alpha: 1),  // indigo
-        UIColor(red: 0.13, green: 0.78, blue: 0.69, alpha: 1),  // teal
-        UIColor(red: 0.95, green: 0.72, blue: 0.29, alpha: 1),  // gold
-    ] {
-        didSet { updateRingColors() }
-    }
+   
     var ringWidth: CGFloat = 3 {
         didSet { setNeedsLayout() }
     }
-
-    private let gradientRingLayer = CAGradientLayer()
-    private let ringMask = CAShapeLayer()
-
-    bonusButton    private let analysisButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.backgroundColor = .secondarySystemBackground
-        btn.layer.masksToBounds = true
-        btn.imageView?.contentMode = .scaleAspectFit
-        btn.tintColor = .label
-
-        if let image = UIImage(named: "analysis") {
-            let original = image.withRenderingMode(.alwaysOriginal)
-            btn.setImage(original, for: .normal)
-            btn.tintColor = nil
-        } else {
-            btn.setImage(UIImage(systemName: "analysis"), for: .normal)
-        }
-
-        btn.layer.borderWidth = 1
-        btn.layer.borderColor = UIColor.separator.cgColor
-        return btn
+    private let analysisButton: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular)
+        imageView.image = UIImage(systemName: "chart.pie.fill")?.applyingSymbolConfiguration(config)
+        imageView.tintColor = .systemBlue
+        return imageView
     }()
-
     private let analysisLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.text = "Expense Analysis"
+        lbl.text = "Bonus Program"
         lbl.font = .systemFont(ofSize: 16, weight: .medium)
         lbl.textColor = .label
         lbl.numberOfLines = 1
         return lbl
     }()
-
+    private let iconBadgeView: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.15)
+        v.layer.cornerRadius = 10
+        return v
+    }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUi()
@@ -66,65 +49,49 @@ class AnalysisCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        analysisButton.layer.cornerRadius = analysisButton.bounds.height / 2
+//        bonusButton.layer.cornerRadius = bonusButton.bounds.height / 2
 
         CATransaction.begin()
-        CATransaction.setDisableActions(true) // avoid implicit animations on layout
-
-        gradientRingLayer.frame = analysisButton.bounds
-
-        let inset = ringWidth / 2.0
-        let roundedRect = analysisButton.bounds.insetBy(dx: inset, dy: inset)
-        let path = UIBezierPath(
-            roundedRect: roundedRect,
-            cornerRadius: analysisButton.layer.cornerRadius - inset
-        )
-        ringMask.path = path.cgPath
-        ringMask.lineWidth = ringWidth
-        ringMask.frame = analysisButton.bounds
-
+        CATransaction.setDisableActions(true)
         CATransaction.commit()
     }
 
-    private func updateRingColors() {
-        let looped = ringColors + [ringColors.first ?? .clear]
-        gradientRingLayer.colors = looped.map { $0.cgColor }
-    }
 
     private func setupUi() {
         selectionStyle = .none
-        contentView.backgroundColor = .systemBackground
+        contentView.backgroundColor = .secondarySystemBackground
 
         contentView.addSubview(analysisButton)
         contentView.addSubview(analysisLabel)
+        contentView.addSubview(iconBadgeView)
+        NSLayoutConstraint.activate([
+            iconBadgeView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            iconBadgeView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            iconBadgeView.widthAnchor.constraint(equalToConstant: 25),
+            iconBadgeView.heightAnchor.constraint(equalToConstant: 30),
+        ])
 
         NSLayoutConstraint.activate([
-            analysisButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            analysisButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            analysisButton.widthAnchor.constraint(equalToConstant: 40),
-            analysisButton.heightAnchor.constraint(equalToConstant: 40),
+            analysisButton.centerXAnchor.constraint(equalTo: iconBadgeView.centerXAnchor),
+            analysisButton.centerYAnchor.constraint(equalTo: iconBadgeView.centerYAnchor),
+            analysisButton.widthAnchor.constraint(equalToConstant: 18),
+            analysisButton.heightAnchor.constraint(equalToConstant: 24),
+            analysisButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 33),
+            analysisButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+        ])
+        NSLayoutConstraint.activate([
 
             analysisLabel.centerYAnchor.constraint(equalTo: analysisButton.centerYAnchor),
-            analysisLabel.leadingAnchor.constraint(equalTo: analysisButton.trailingAnchor, constant: 12),
+            analysisLabel.leadingAnchor.constraint(equalTo: analysisButton.trailingAnchor, constant: 16),
             analysisLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16),
 
             contentView.bottomAnchor.constraint(greaterThanOrEqualTo: analysisButton.bottomAnchor, constant: 0)
         ])
-        gradientRingLayer.type = .conic
-        gradientRingLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
-        gradientRingLayer.endPoint = CGPoint(x: 1, y: 1)
-        updateRingColors()
-
-        ringMask.fillColor = UIColor.clear.cgColor
-        ringMask.strokeColor = UIColor.black.cgColor
-        ringMask.lineWidth = ringWidth
-
-        gradientRingLayer.mask = ringMask
-
-        analysisButton.layer.addSublayer(gradientRingLayer)
-
-        analysisButton.addAction(UIAction(handler: { _ in
-            self.onTap?()
-        }), for: .touchUpInside)
+       
+//        financialButton.addAction(UIAction(handler: { _ in
+//            self.onTap?()
+//        }), for: .touchUpInside)
     }
 }
+
+

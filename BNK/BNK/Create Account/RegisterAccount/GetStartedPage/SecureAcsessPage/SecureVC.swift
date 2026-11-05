@@ -250,7 +250,7 @@ class SecureVC: UIViewController {
     }
 
     @objc private func continueTapped() {
-         let vc = PasscodeVC()
+         let vc = LoadingVc()
          navigationController?.pushViewController(vc, animated: true)
     }
 }

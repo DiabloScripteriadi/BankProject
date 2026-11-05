@@ -5,7 +5,8 @@
 //  Created by chasemedkcorto on 06.02.26.
 //
 import UIKit
-class NottificationsCell: UITableViewCell {
+
+final class NottificationsCell: UITableViewCell {
 
     var onTap: (() -> Void)?
 
@@ -20,12 +21,11 @@ class NottificationsCell: UITableViewCell {
         if let image = UIImage(named: "notification") {
             btn.setImage(image, for: .normal)
         } else {
-            
-            btn.setImage(UIImage(systemName: "globe"), for: .normal)
+            btn.setImage(UIImage(systemName: "bell.badge"), for: .normal)
         }
        
         btn.layer.borderWidth = 1
-        btn.layer.borderColor = UIColor.separator.cgColor
+        btn.layer.borderColor = UIColor.separator.withAlphaComponent(0.5).cgColor
         return btn
     }()
 
@@ -37,6 +37,14 @@ class NottificationsCell: UITableViewCell {
         lbl.textColor = .label
         lbl.numberOfLines = 1
         return lbl
+    }()
+    
+    private let chevronImageView: UIImageView = {
+        let iv = UIImageView(image: UIImage(systemName: "chevron.right"))
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.tintColor = .tertiaryLabel
+        iv.contentMode = .scaleAspectFit
+        return iv
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -50,30 +58,35 @@ class NottificationsCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        notficationsButton.layer.cornerRadius =  notficationsButton.bounds.height / 2
+        notficationsButton.layer.cornerRadius = notficationsButton.bounds.height / 2
     }
 
     private func setupUi() {
         selectionStyle = .none
-        contentView.backgroundColor = .systemBackground
+        contentView.backgroundColor = .clear // ვასუფთავებთ, რომ სექციის მთავარ ქარდს ერწყმოდეს
 
         contentView.addSubview(notficationsButton)
         contentView.addSubview(notficationsLabel)
+        contentView.addSubview(chevronImageView)
 
         NSLayoutConstraint.activate([
-            notficationsButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             notficationsButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            notficationsButton.widthAnchor.constraint(equalToConstant: 60),
-            notficationsButton.heightAnchor.constraint(equalToConstant: 60),
+            notficationsButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            notficationsButton.widthAnchor.constraint(equalToConstant: 48),
+            notficationsButton.heightAnchor.constraint(equalToConstant: 48),
 
-            notficationsLabel.centerYAnchor.constraint(equalTo: notficationsButton.centerYAnchor),
-            notficationsLabel.leadingAnchor.constraint(equalTo: notficationsButton.trailingAnchor, constant: 12),
-            notficationsLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16),
-
-            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: notficationsButton.bottomAnchor, constant: 0)
+            notficationsLabel.leadingAnchor.constraint(equalTo: notficationsButton.trailingAnchor, constant: 14),
+            notficationsLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            notficationsLabel.trailingAnchor.constraint(lessThanOrEqualTo: chevronImageView.leadingAnchor, constant: -12),
+            
+            chevronImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            chevronImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 10),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 16),
+            
+            contentView.heightAnchor.constraint(equalToConstant: 72)
         ])
 
-       
         notficationsButton.addTarget(self, action: #selector(handleTap), for: .touchUpInside)
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         contentView.addGestureRecognizer(tap)

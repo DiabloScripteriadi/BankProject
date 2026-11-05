@@ -1,10 +1,8 @@
-import Foundation
-import FirebaseFirestore
+//
+//  CardModel.swift
+//  BNK
+//
+//  Created by chasemedkcorto on 27/10/2026.
+//
 
-struct CardModel: Codable {
-    let id: String?
-    let last4: String
-    let brand: String
-    let paymentMethodId: String
-    @ServerTimestamp var updatedAt: Timestamp?
-}
+

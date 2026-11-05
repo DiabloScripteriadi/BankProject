@@ -5,6 +5,7 @@
 //  Created by chasemedkcorto on 24.02.26.
 
 import UIKit
+
 class Card: UIView {
 
     private let shadowContainer = UIView()
@@ -17,7 +18,7 @@ class Card: UIView {
     private let visaLabel: UILabel = {
         let lb = UILabel()
         lb.translatesAutoresizingMaskIntoConstraints = false
-        lb.text = "𝙑𝙄𝙎𝘼"
+        lb.text = "𝙑𝙄𝙍𝙏𝙐𝘼𝙇"
         lb.textColor = UIColor.white.withAlphaComponent(0.85)
         lb.font = .italicSystemFont(ofSize: 22)
         return lb
@@ -67,25 +68,37 @@ class Card: UIView {
         lb.textColor = UIColor.white.withAlphaComponent(0.85)
         return lb
     }()
+    
     private let mc1 = UIView()
     private let mc2 = UIView()
+
+    // Provide a default size so previews/layout without explicit constraints show the card
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: 280, height: 160)
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
 
     private func setup() {
-        backgroundColor = .clear
+        backgroundColor = .black
+
+        // Unified corner radius across layers
+        layer.cornerRadius = 22
+        layer.cornerCurve  = .continuous
+        layer.masksToBounds = false // keep false to allow shadow to render
+
         setupShadowContainer()
         setupCard()
         setupGradient()
         setupChip()
-        setupMinyView()
         setupLabels()
         setupMastercard()
         add3DTilt()
@@ -93,25 +106,27 @@ class Card: UIView {
 
     private func setupShadowContainer() {
         shadowContainer.translatesAutoresizingMaskIntoConstraints = false
-        shadowContainer.backgroundColor = .purple
-        shadowContainer.layer.shadowColor  = UIColor(red: 0.18, green: 0.15, blue: 0.38, alpha: 1).cgColor
+        shadowContainer.backgroundColor = .clear
+        shadowContainer.layer.shadowColor  = UIColor(red: 0x17/255.0, green: 0x1B/255.0, blue: 0x19/255.0, alpha: 1).cgColor
         shadowContainer.layer.shadowOpacity = 0.45
         shadowContainer.layer.shadowOffset  = CGSize(width: 0, height: 12)
         shadowContainer.layer.shadowRadius  = 24
-        shadowContainer.layer.cornerRadius  = 20
+        shadowContainer.layer.cornerRadius  = 22
+        shadowContainer.layer.cornerCurve   = .continuous
         addSubview(shadowContainer)
 
         NSLayoutConstraint.activate([
-            shadowContainer.centerXAnchor.constraint(equalTo: centerXAnchor),
-            shadowContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
-            shadowContainer.widthAnchor.constraint(equalToConstant: 280),
-            shadowContainer.heightAnchor.constraint(equalToConstant: 165)
+            shadowContainer.topAnchor.constraint(equalTo: topAnchor),
+            shadowContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+            shadowContainer.trailingAnchor.constraint(equalTo: trailingAnchor),
+            shadowContainer.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 
     private func setupCard() {
         cardView.translatesAutoresizingMaskIntoConstraints = false
-        cardView.layer.cornerRadius = 20
+        cardView.layer.cornerRadius = 22
+        cardView.layer.cornerCurve  = .continuous
         cardView.clipsToBounds = true
         shadowContainer.addSubview(cardView)
 
@@ -122,21 +137,24 @@ class Card: UIView {
             cardView.bottomAnchor.constraint(equalTo: shadowContainer.bottomAnchor)
         ])
     }
-    //esec 3d da ait gavakete
+
     private func setupGradient() {
+        // More visible green and earlier transition to green
         gradientLayer.colors = [
-            UIColor(red: 0.12, green: 0.10, blue: 0.23, alpha: 1).cgColor,
-            UIColor(red: 0.18, green: 0.15, blue: 0.38, alpha: 1).cgColor,
-            UIColor(red: 0.23, green: 0.13, blue: 0.50, alpha: 1).cgColor
+            UIColor(red: 0.12, green: 0.10, blue: 0.23, alpha: 1).cgColor, // deep purple
+            UIColor(red: 0.18, green: 0.15, blue: 0.38, alpha: 1).cgColor, // indigo
+            UIColor(red: 0.23, green: 0.13, blue: 0.50, alpha: 1).cgColor, // violet
+            UIColor(red: 0.10, green: 0.80, blue: 0.45, alpha: 1).cgColor  // brighter green
         ]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
-        gradientLayer.endPoint   = CGPoint(x: 1, y: 1)
+        gradientLayer.locations = [0.0, 0.28, 0.56, 1.0] as [NSNumber]
+        gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
+        gradientLayer.endPoint   = CGPoint(x: 1.0, y: 1.0)
         cardView.layer.insertSublayer(gradientLayer, at: 0)
 
         let gloss = CAGradientLayer()
         gloss.name = "gloss"
         gloss.colors = [
-            UIColor.white.withAlphaComponent(0.10).cgColor,
+            UIColor.white.withAlphaComponent(0.06).cgColor,
             UIColor.white.withAlphaComponent(0.00).cgColor
         ]
         gloss.startPoint = CGPoint(x: 0.5, y: 0)
@@ -149,13 +167,14 @@ class Card: UIView {
         gradientLayer.frame = cardView.bounds
         chipGradient.frame  = chipView.bounds
 
+        // Keep shadow path matched to rounded rect for better performance and accurate shape
+        shadowContainer.layer.shadowPath = UIBezierPath(roundedRect: shadowContainer.bounds, cornerRadius: 22).cgPath
+
         if let gloss = cardView.layer.sublayers?.first(where: { $0.name == "gloss" }) {
-            gloss.frame = CGRect(x: 0, y: 0,
-                                 width: cardView.bounds.width,
-                                 height: cardView.bounds.height * 0.5)
+            gloss.frame = cardView.bounds
         }
     }
-    //esec ait
+
     private func setupChip() {
         chipView.translatesAutoresizingMaskIntoConstraints = false
         chipView.layer.cornerRadius = 4
@@ -175,25 +194,6 @@ class Card: UIView {
             chipView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 18),
             chipView.widthAnchor.constraint(equalToConstant: 34),
             chipView.heightAnchor.constraint(equalToConstant: 26)
-        ])
-    }
-
-    private func setupMinyView() {
-        minyView.backgroundColor = UIColor.systemYellow
-        minyView.layer.cornerRadius = 12
-        minyView.layer.shadowColor = UIColor.black.cgColor
-        minyView.layer.shadowOpacity = 0.25
-        minyView.layer.shadowOffset = CGSize(width: 0, height: 3)
-        minyView.layer.shadowRadius = 5
-
-        cardView.addSubview(minyView)
-        minyView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            minyView.widthAnchor.constraint(equalToConstant: 50),
-            minyView.heightAnchor.constraint(equalToConstant: 35),
-            minyView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
-            minyView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 15)
         ])
     }
 
@@ -218,7 +218,7 @@ class Card: UIView {
             cardHolderLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 18),
 
             expiresMinyLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -36),
-            expiresMinyLabel.leadingAnchor.constraint(equalTo: cardHolderLabel.trailingAnchor, constant: 24),
+            expiresMinyLabel.leadingAnchor.constraint(equalTo: cardHolderLabel.trailingAnchor, constant: 40),
 
             expireLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
             expireLabel.leadingAnchor.constraint(equalTo: expiresMinyLabel.leadingAnchor),
@@ -247,16 +247,19 @@ class Card: UIView {
         ])
     }
 
+    // განახლების მეთოდები, რომლებიც ზუსტად ცვლიან ლეიბლების ტექსტებს
     func updateNumber(_ masked: String) {
         cardNumberLabel.text = masked
     }
+    
     func updateHolder(_ name: String) {
         cardHolderLabel.text = name.isEmpty ? "FULL NAME" : name.uppercased()
     }
+    
     func updateExpiry(_ expiry: String) {
         expireLabel.text = expiry.isEmpty ? "MM / YY" : expiry
     }
-    //esec
+
     private func add3DTilt() {
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handleTilt(_:)))
         addGestureRecognizer(pan)
@@ -286,20 +289,6 @@ class Card: UIView {
         }
     }
 }
-
-
-extension UILabel {
-var letterSpacing: CGFloat {
-    get { 0 }
-    set {
-        guard let t = text else { return }
-        let attr = NSMutableAttributedString(string: t)
-        attr.addAttribute(.kern, value: newValue, range: NSRange(location: 0, length: t.count))
-        attributedText = attr
-    }
+#Preview {
+    Card()
 }
-}
-//
-//#Preview {
-//    UINavigationController(rootViewController: CardVC())
-//}
